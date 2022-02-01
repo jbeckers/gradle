@@ -16,30 +16,46 @@
 
 package org.gradle.tooling.internal.consumer;
 
+import org.gradle.tooling.AssertionFailure;
 import org.gradle.tooling.Failure;
 
-import java.io.PrintWriter;
-import java.io.StringWriter;
-import java.util.Collections;
+import javax.annotation.Nullable;
 import java.util.List;
 
-public class DefaultFailure implements Failure {
+public class DefaultAssertionFailure implements AssertionFailure {
 
     private final String message;
     private final String description;
     private final List<? extends Failure> causes;
 
-    public DefaultFailure(String message, String description, List<? extends Failure> causes) {
+    private final String expected;
+    private final String actual;
+
+    public DefaultAssertionFailure(String message, String description, String expected, String actual, List<? extends Failure> causes) {
         this.message = message;
         this.description = description;
         this.causes = causes;
+        this.expected = expected;
+        this.actual = actual;
     }
 
+    @Override
+    public String getExpected() {
+        return expected;
+    }
+
+    @Override
+    public String getActual() {
+        return actual;
+    }
+
+    @Nullable
     @Override
     public String getMessage() {
         return message;
     }
 
+    @Nullable
     @Override
     public String getDescription() {
         return description;
@@ -48,14 +64,5 @@ public class DefaultFailure implements Failure {
     @Override
     public List<? extends Failure> getCauses() {
         return causes;
-    }
-
-    public static DefaultFailure fromThrowable(Throwable t) {
-        StringWriter out = new StringWriter();
-        PrintWriter wrt = new PrintWriter(out);
-        t.printStackTrace(wrt);
-        Throwable cause = t.getCause();
-        DefaultFailure causeFailure = cause != null && cause != t ? fromThrowable(cause) : null;
-        return new DefaultFailure(t.getMessage(), out.toString(), Collections.singletonList(causeFailure));
     }
 }
