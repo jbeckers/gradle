@@ -16,13 +16,13 @@
 
 package org.gradle.tooling.internal.consumer;
 
-import org.gradle.tooling.AssertionFailure;
+import org.gradle.tooling.TestAssertionFailure;
 import org.gradle.tooling.Failure;
 
 import javax.annotation.Nullable;
 import java.util.List;
 
-public class DefaultAssertionFailure implements AssertionFailure {
+public class DefaultTestAssertionFailure implements TestAssertionFailure {
 
     private final String message;
     private final String description;
@@ -31,7 +31,7 @@ public class DefaultAssertionFailure implements AssertionFailure {
     private final String expected;
     private final String actual;
 
-    public DefaultAssertionFailure(String message, String description, String expected, String actual, List<? extends Failure> causes) {
+    public DefaultTestAssertionFailure(String message, String description, String expected, String actual, List<? extends Failure> causes) {
         this.message = message;
         this.description = description;
         this.causes = causes;

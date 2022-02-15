@@ -1,5 +1,5 @@
 /*
- * Copyright 2015 the original author or authors.
+ * Copyright 2022 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -13,29 +13,16 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.gradle.tooling;
-
-import org.gradle.api.Incubating;
+package org.gradle.tooling.internal.protocol;
 
 /**
- * A test assertion failure.
+ * DO NOT CHANGE THIS INTERFACE. It is part of the cross-version protocol.
  *
  * @since 7.5
  */
-@Incubating
-public interface AssertionFailure extends Failure {
+public interface InternalTestAssertionFailure extends InternalFailure {
 
-    /**
-     * The expected value.
-     *
-     * @return expected or null.
-     */
     String getExpected();
 
-    /**
-     * The actual value.
-     *
-     * @return actual or null.
-     */
     String getActual();
 }

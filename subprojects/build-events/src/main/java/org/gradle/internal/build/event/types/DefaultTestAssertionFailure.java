@@ -15,7 +15,7 @@
  */
 package org.gradle.internal.build.event.types;
 
-import org.gradle.tooling.internal.protocol.InternalAssertionFailure;
+import org.gradle.tooling.internal.protocol.InternalTestAssertionFailure;
 import org.gradle.tooling.internal.protocol.InternalFailure;
 
 import java.io.PrintWriter;
@@ -24,7 +24,7 @@ import java.io.StringWriter;
 import java.util.Collections;
 import java.util.List;
 
-public class DefaultAssertionFailure implements Serializable, InternalAssertionFailure {
+public class DefaultTestAssertionFailure implements Serializable, InternalTestAssertionFailure {
 
     private final String message;
     private final String description;
@@ -32,7 +32,7 @@ public class DefaultAssertionFailure implements Serializable, InternalAssertionF
     private final String expected;
     private final String actual;
 
-    private DefaultAssertionFailure(String message, String description, DefaultFailure cause, String expected, String actual) {
+    private DefaultTestAssertionFailure(String message, String description, DefaultFailure cause, String expected, String actual) {
         this.message = message;
         this.description = description;
         this.cause = cause;
@@ -49,13 +49,13 @@ public class DefaultAssertionFailure implements Serializable, InternalAssertionF
         return actual;
     }
 
-    public static DefaultAssertionFailure fromThrowable(Throwable t, String expected, String actual) {
+    public static DefaultTestAssertionFailure fromThrowable(Throwable t, String expected, String actual) {
         StringWriter out = new StringWriter();
         PrintWriter wrt = new PrintWriter(out);
         t.printStackTrace(wrt);
         Throwable cause = t.getCause();
-        DefaultAssertionFailure causeFailure = cause != null && cause != t ? fromThrowable(cause, null, null) : null;
-        return new DefaultAssertionFailure(t.getMessage(), out.toString(), null, expected, actual);
+        DefaultTestAssertionFailure causeFailure = cause != null && cause != t ? fromThrowable(cause, null, null) : null;
+        return new DefaultTestAssertionFailure(t.getMessage(), out.toString(), null, expected, actual);
     }
 
     @Override

@@ -19,7 +19,7 @@ package org.gradle.integtests.tooling.r75
 import org.gradle.integtests.tooling.fixture.AbstractHttpCrossVersionSpec
 import org.gradle.integtests.tooling.fixture.TargetGradleVersion
 import org.gradle.integtests.tooling.fixture.ToolingApiVersion
-import org.gradle.tooling.AssertionFailure
+import org.gradle.tooling.TestAssertionFailure
 import org.gradle.tooling.BuildException
 import org.gradle.tooling.Failure
 import org.gradle.tooling.ProjectConnection
@@ -28,7 +28,6 @@ import org.gradle.tooling.events.ProgressListener
 import org.gradle.tooling.events.test.TestFailureResult
 import org.gradle.tooling.events.test.TestFinishEvent
 import org.gradle.tooling.events.test.TestOperationResult
-import org.gradle.tooling.internal.consumer.DefaultAssertionFailure
 
 @ToolingApiVersion(">=7.5")
 @TargetGradleVersion(">=7.5")
@@ -80,7 +79,8 @@ class TestFailureProgressEventCrossVersionTest extends AbstractHttpCrossVersionS
         then:
         thrown(BuildException)
         progressEventCollector.failures.size() == 3
-        progressEventCollector.failures.findAll { it instanceof AssertionFailure }.size() == 2
+        progressEventCollector.failures.findAll { it instanceof TestAssertionFailure }.size() == 2
+        progressEventCollector.failures.findAll { it instanceof TestAssertionFailure && it.expected == 'myExpectedValue' && it.actual == 'myActualValue' }.size() == 1
     }
 
     class ProgressEventCollector implements ProgressListener {

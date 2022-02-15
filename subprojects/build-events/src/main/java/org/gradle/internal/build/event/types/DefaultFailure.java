@@ -52,7 +52,7 @@ public class DefaultFailure implements Serializable, InternalFailure {
 
     public static InternalFailure fromThrowable(Throwable t, boolean assertionFailure, String expected, String actual) {
         if (assertionFailure) {
-            return DefaultAssertionFailure.fromThrowable(t, expected, actual);
+            return DefaultTestAssertionFailure.fromThrowable(t, expected, actual);
         }
         StringWriter out = new StringWriter();
         PrintWriter wrt = new PrintWriter(out);
