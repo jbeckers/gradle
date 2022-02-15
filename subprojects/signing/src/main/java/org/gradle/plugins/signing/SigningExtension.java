@@ -469,11 +469,11 @@ public class SigningExtension {
      * operation} gives access to the created signature files. <p> If there is no configured default signatory available (and one is not explicitly specified in this operation's configuration), the
      * sign operation will fail.
      *
-     * @param action The configuration of the {@link SignOperation sign operation}.
+     * @param setup The configuration of the {@link SignOperation sign operation}.
      * @return The executed {@link SignOperation sign operation}.
      */
-    public SignOperation sign(Action<SignOperation> action) {
-        return doSignOperation(action);
+    public SignOperation sign(Action<SignOperation> setup) {
+        return doSignOperation(setup);
     }
 
     protected SignOperation doSignOperation(final Closure setup) {
