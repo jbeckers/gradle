@@ -18,6 +18,7 @@ package org.gradle.plugins.signing;
 import groovy.lang.Closure;
 import org.gradle.api.Action;
 import org.gradle.api.DomainObjectCollection;
+import org.gradle.api.Incubating;
 import org.gradle.api.InvalidUserDataException;
 import org.gradle.api.Project;
 import org.gradle.api.Task;
@@ -471,7 +472,10 @@ public class SigningExtension {
      *
      * @param setup The configuration of the {@link SignOperation sign operation}.
      * @return The executed {@link SignOperation sign operation}.
+     *
+     * @since 7.5
      */
+    @Incubating
     public SignOperation sign(Action<SignOperation> setup) {
         return doSignOperation(setup);
     }
