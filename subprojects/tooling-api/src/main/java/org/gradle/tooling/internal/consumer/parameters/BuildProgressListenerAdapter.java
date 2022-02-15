@@ -111,9 +111,11 @@ import org.gradle.tooling.events.work.internal.DefaultWorkItemStartEvent;
 import org.gradle.tooling.events.work.internal.DefaultWorkItemSuccessResult;
 import org.gradle.tooling.internal.consumer.DefaultTestAssertionFailure;
 import org.gradle.tooling.internal.consumer.DefaultFailure;
+import org.gradle.tooling.internal.consumer.DefaultTestFrameworkFailure;
 import org.gradle.tooling.internal.protocol.InternalTestAssertionFailure;
 import org.gradle.tooling.internal.protocol.InternalBuildProgressListener;
 import org.gradle.tooling.internal.protocol.InternalFailure;
+import org.gradle.tooling.internal.protocol.InternalTestFrameworkFailure;
 import org.gradle.tooling.internal.protocol.events.InternalBinaryPluginIdentifier;
 import org.gradle.tooling.internal.protocol.events.InternalFailureResult;
 import org.gradle.tooling.internal.protocol.events.InternalFileDownloadDescriptor;
@@ -747,6 +749,9 @@ public class BuildProgressListenerAdapter implements InternalBuildProgressListen
         if (origFailure instanceof InternalTestAssertionFailure) {
             InternalTestAssertionFailure assertionFailure = (InternalTestAssertionFailure) origFailure;
             return new DefaultTestAssertionFailure(assertionFailure.getMessage(), assertionFailure.getDescription(), assertionFailure.getExpected(), assertionFailure.getActual(), toFailures(origFailure.getCauses()));
+        } else if (origFailure instanceof InternalTestFrameworkFailure) {
+            InternalTestFrameworkFailure frameworkFailure = (InternalTestFrameworkFailure) origFailure;
+            return new DefaultTestFrameworkFailure(frameworkFailure.getMessage(), frameworkFailure.getDescription(), toFailures(origFailure.getCauses()));
         }
         return origFailure == null ? null : new DefaultFailure(
             origFailure.getMessage(),

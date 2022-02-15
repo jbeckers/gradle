@@ -23,6 +23,7 @@ import org.gradle.tooling.TestAssertionFailure
 import org.gradle.tooling.BuildException
 import org.gradle.tooling.Failure
 import org.gradle.tooling.ProjectConnection
+import org.gradle.tooling.TestFrameworkFailure
 import org.gradle.tooling.events.ProgressEvent
 import org.gradle.tooling.events.ProgressListener
 import org.gradle.tooling.events.test.TestFailureResult
@@ -80,6 +81,7 @@ class TestFailureProgressEventCrossVersionTest extends AbstractHttpCrossVersionS
         thrown(BuildException)
         progressEventCollector.failures.size() == 3
         progressEventCollector.failures.findAll { it instanceof TestAssertionFailure }.size() == 2
+        progressEventCollector.failures.findAll { it instanceof TestFrameworkFailure }.size() == 1
         progressEventCollector.failures.findAll { it instanceof TestAssertionFailure && it.expected == 'myExpectedValue' && it.actual == 'myActualValue' }.size() == 1
     }
 

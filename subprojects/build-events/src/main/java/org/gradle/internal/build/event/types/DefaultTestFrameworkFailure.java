@@ -1,5 +1,5 @@
 /*
- * Copyright 2019 the original author or authors.
+ * Copyright 2022 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,6 +16,7 @@
 package org.gradle.internal.build.event.types;
 
 import org.gradle.tooling.internal.protocol.InternalFailure;
+import org.gradle.tooling.internal.protocol.InternalTestFrameworkFailure;
 
 import java.io.PrintWriter;
 import java.io.Serializable;
@@ -23,16 +24,25 @@ import java.io.StringWriter;
 import java.util.Collections;
 import java.util.List;
 
-public class DefaultFailure implements Serializable, InternalFailure {
+public class DefaultTestFrameworkFailure implements Serializable, InternalTestFrameworkFailure {
 
     private final String message;
     private final String description;
     private final InternalFailure cause;
 
-    protected DefaultFailure(String message, String description, InternalFailure cause) {
+    private DefaultTestFrameworkFailure(String message, String description, InternalFailure cause) {
         this.message = message;
         this.description = description;
         this.cause = cause;
+    }
+
+    public static DefaultTestFrameworkFailure fromThrowable(Throwable t) {
+        StringWriter out = new StringWriter();
+        PrintWriter wrt = new PrintWriter(out);
+        t.printStackTrace(wrt);
+        Throwable cause = t.getCause();
+        InternalFailure causeFailure = cause != null && cause != t ? DefaultFailure.fromThrowable(cause) : null;
+        return new DefaultTestFrameworkFailure(t.getMessage(), out.toString(), causeFailure);
     }
 
     @Override
@@ -47,15 +57,6 @@ public class DefaultFailure implements Serializable, InternalFailure {
 
     @Override
     public List<? extends InternalFailure> getCauses() {
-        return cause == null ? Collections.emptyList() : Collections.singletonList(cause);
-    }
-
-    public static InternalFailure fromThrowable(Throwable t) {
-        StringWriter out = new StringWriter();
-        PrintWriter wrt = new PrintWriter(out);
-        t.printStackTrace(wrt);
-        Throwable cause = t.getCause();
-        InternalFailure causeFailure = cause != null && cause != t ? fromThrowable(cause) : null;
-        return new DefaultFailure(t.getMessage(), out.toString(), causeFailure);
+        return Collections.singletonList(cause);
     }
 }

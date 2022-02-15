@@ -22,10 +22,11 @@ import org.gradle.api.tasks.testing.TestFailure;
 import org.gradle.api.tasks.testing.TestResult;
 import org.gradle.internal.build.event.BuildEventSubscriptions;
 import org.gradle.internal.build.event.types.AbstractTestResult;
-import org.gradle.internal.build.event.types.DefaultFailure;
+import org.gradle.internal.build.event.types.DefaultTestAssertionFailure;
 import org.gradle.internal.build.event.types.DefaultTestDescriptor;
 import org.gradle.internal.build.event.types.DefaultTestFailureResult;
 import org.gradle.internal.build.event.types.DefaultTestFinishedProgressEvent;
+import org.gradle.internal.build.event.types.DefaultTestFrameworkFailure;
 import org.gradle.internal.build.event.types.DefaultTestSkippedResult;
 import org.gradle.internal.build.event.types.DefaultTestStartedProgressEvent;
 import org.gradle.internal.build.event.types.DefaultTestSuccessResult;
@@ -133,7 +134,11 @@ class TestOperationMapper implements BuildOperationMapper<ExecuteTestBuildOperat
     private static List<InternalFailure> convertExceptions(List<TestFailure> failures) {
         List<InternalFailure> result = new ArrayList<>(failures.size());
         for (TestFailure failure : failures) {
-            result.add(DefaultFailure.fromThrowable(failure.getRawFailure(), failure.isAssertionFailure(), failure.getExpected(), failure.getActual()));
+            if (failure.isAssertionFailure()) {
+                result.add(DefaultTestAssertionFailure.fromThrowable(failure.getRawFailure(), failure.getExpected(), failure.getActual()));
+            } else {
+                result.add(DefaultTestFrameworkFailure.fromThrowable(failure.getRawFailure()));
+            }
         }
         return result;
     }
