@@ -264,7 +264,7 @@ public class TestNGTestResultProcessorAdapter implements ISuiteListener, ITestLi
             resultProcessor.started(new DefaultTestMethodDescriptor(testId, iTestResult.getTestClass().getName(), iTestResult.getName()), startEvent);
         }
         if (resultType == TestResult.ResultType.FAILURE) {
-            TestFailure testFailure = new DefaultTestFailure(iTestResult.getThrowable(), false);
+            TestFailure testFailure = new DefaultTestFailure(iTestResult.getThrowable(), false, null, null);
             resultProcessor.failure(testId, testFailure);
         }
         resultProcessor.completed(testId, new TestCompleteEvent(iTestResult.getEndMillis(), resultType));
@@ -295,7 +295,7 @@ public class TestNGTestResultProcessorAdapter implements ISuiteListener, ITestLi
         Object parentId = classInfo == null ? null : classInfo.id;
         resultProcessor.started(test, new TestStartEvent(testResult.getStartMillis(), parentId));
 
-        TestFailure testFailure = new DefaultTestFailure(testResult.getThrowable(), false);
+        TestFailure testFailure = new DefaultTestFailure(testResult.getThrowable(), false, null, null);
         resultProcessor.failure(test.getId(), testFailure);
         resultProcessor.completed(test.getId(), new TestCompleteEvent(testResult.getEndMillis(), TestResult.ResultType.FAILURE));
     }

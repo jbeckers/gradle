@@ -103,12 +103,12 @@ public class JUnitPlatformTestExecutionListener implements TestExecutionListener
             reportStartedUnlessAlreadyStarted(testIdentifier);
             Throwable failure = testExecutionResult.getThrowable().orElseGet(() -> new AssertionError("test failed but did not report an exception"));
             if (testIdentifier.isTest()) {
-                TestFailure testFailure = new DefaultTestFailure(failure, failure.getClass().getName().contains("Assertion")); // TODO why AssertionFailedError is not available here? OpenTest4j is an implementation dependency.
+                TestFailure testFailure = new DefaultTestFailure(failure, failure.getClass().getName().contains("Assertion"), null, null); // TODO why AssertionFailedError is not available here? OpenTest4j is an implementation dependency.
                 resultProcessor.failure(getId(testIdentifier), testFailure);
             } else {
                 TestDescriptorInternal syntheticTestDescriptor = createSyntheticTestDescriptorForContainer(testIdentifier);
                 resultProcessor.started(syntheticTestDescriptor, startEvent(getId(testIdentifier)));
-                TestFailure testFailure = new DefaultTestFailure(failure, false);
+                TestFailure testFailure = new DefaultTestFailure(failure, false, null, null);
                 resultProcessor.failure(syntheticTestDescriptor.getId(), testFailure);
                 resultProcessor.completed(syntheticTestDescriptor.getId(), completeEvent());
             }

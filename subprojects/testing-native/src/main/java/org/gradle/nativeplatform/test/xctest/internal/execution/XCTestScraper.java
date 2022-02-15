@@ -139,7 +139,7 @@ class XCTestScraper implements TextStream {
                         if (failed) {
                             resultType = TestResult.ResultType.FAILURE;
                             Throwable failure = new Throwable(Joiner.on(TextUtil.getPlatformLineSeparator()).join(xcTestDescriptor.getMessages()));
-                            TestFailure testFailure = new DefaultTestFailure(failure, false);
+                            TestFailure testFailure = new DefaultTestFailure(failure, false, null, null);
                             processor.failure(testDescriptor.getId(), testFailure);
                         }
 
@@ -187,7 +187,7 @@ class XCTestScraper implements TextStream {
                     testId = rootTestSuiteId;
                 }
 
-                TestFailure testFailure = new DefaultTestFailure(failure, false);
+                TestFailure testFailure = new DefaultTestFailure(failure, false, null, null);
                 processor.failure(testId, testFailure);
                 testDescriptors.clear();
             }

@@ -38,4 +38,8 @@ public interface TestFailure {
      * @return true if the failure is recognized as an assertion failure, false otherwise
      */
     boolean isAssertionFailure();
+
+    String getExpected();
+
+    String getActual();
 }

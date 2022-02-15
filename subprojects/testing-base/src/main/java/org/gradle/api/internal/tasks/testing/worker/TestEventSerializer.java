@@ -168,13 +168,17 @@ public class TestEventSerializer {
         public DefaultTestFailure read(Decoder decoder) throws Exception {
             Throwable rawFailure = throwableSerializer.read(decoder);
             boolean isAssertionFailure = decoder.readBoolean();
-            return new DefaultTestFailure(rawFailure, isAssertionFailure);
+            String expected = decoder.readNullableString();
+            String actual = decoder.readNullableString();
+            return new DefaultTestFailure(rawFailure, isAssertionFailure, expected, actual);
         }
 
         @Override
         public void write(Encoder encoder, DefaultTestFailure value) throws Exception {
             throwableSerializer.write(encoder, value.getRawFailure());
             encoder.writeBoolean(value.isAssertionFailure());
+            encoder.writeNullableString(value.getExpected());
+            encoder.writeNullableString(value.getActual());
         }
     }
 

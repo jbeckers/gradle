@@ -26,6 +26,7 @@ import org.gradle.api.tasks.testing.TestFailure;
 import org.gradle.api.tasks.testing.TestResult;
 import org.gradle.internal.id.IdGenerator;
 import org.gradle.internal.time.Clock;
+import org.junit.ComparisonFailure;
 import org.junit.runner.Description;
 import org.junit.runner.notification.Failure;
 import org.junit.runner.notification.RunListener;
@@ -78,7 +79,17 @@ public class JUnitTestEventAdapter extends RunListener {
         }
 
         Throwable exception = failure.getException();
-        TestFailure testFailure = new DefaultTestFailure(exception, exception instanceof AssertionError);
+
+        String expected = null;
+        String actual = null;
+        boolean isAssertionFailure = exception instanceof ComparisonFailure;
+        if (isAssertionFailure) {
+            ComparisonFailure comparisonFailure = (ComparisonFailure) exception;
+            expected = comparisonFailure.getExpected();
+            actual = comparisonFailure.getActual();
+        }
+
+        TestFailure testFailure = new DefaultTestFailure(exception, exception instanceof AssertionError, expected, actual);
         resultProcessor.failure(testInternal.getId(), testFailure);
         if (needEndEvent) {
             resultProcessor.completed(testInternal.getId(), new TestCompleteEvent(clock.getCurrentTime()));

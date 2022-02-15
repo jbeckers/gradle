@@ -22,8 +22,12 @@ public class DefaultTestFailure implements TestFailure {
 
     private final Throwable rawFailure;
     private final boolean isAssertionFailure;
+    private final String expected;
+    private final String actual;
 
-    public DefaultTestFailure(Throwable rawFailure, boolean isAssertionFailure) {
+    public DefaultTestFailure(Throwable rawFailure, boolean isAssertionFailure, String expected, String actual) {
+        this.expected = expected;
+        this.actual = actual;
         if (rawFailure == null) {
             throw new RuntimeException(new IllegalAccessException("This should not happen"));
         }
@@ -42,6 +46,16 @@ public class DefaultTestFailure implements TestFailure {
     }
 
     @Override
+    public String getExpected() {
+        return expected;
+    }
+
+    @Override
+    public String getActual() {
+        return actual;
+    }
+
+    @Override
     public boolean equals(Object o) {
         if (this == o) {
             return true;
@@ -55,13 +69,21 @@ public class DefaultTestFailure implements TestFailure {
         if (isAssertionFailure != that.isAssertionFailure) {
             return false;
         }
-        return rawFailure != null ? rawFailure.equals(that.rawFailure) : that.rawFailure == null;
+        if (rawFailure != null ? !rawFailure.equals(that.rawFailure) : that.rawFailure != null) {
+            return false;
+        }
+        if (expected != null ? !expected.equals(that.expected) : that.expected != null) {
+            return false;
+        }
+        return actual != null ? actual.equals(that.actual) : that.actual == null;
     }
 
     @Override
     public int hashCode() {
         int result = rawFailure != null ? rawFailure.hashCode() : 0;
         result = 31 * result + (isAssertionFailure ? 1 : 0);
+        result = 31 * result + (expected != null ? expected.hashCode() : 0);
+        result = 31 * result + (actual != null ? actual.hashCode() : 0);
         return result;
     }
 }

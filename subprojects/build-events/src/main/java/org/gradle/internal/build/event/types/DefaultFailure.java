@@ -50,15 +50,15 @@ public class DefaultFailure implements Serializable, InternalFailure {
         return cause == null ? Collections.emptyList() : Collections.singletonList(cause);
     }
 
-    public static InternalFailure fromThrowable(Throwable t, boolean assertionFailure) {
+    public static InternalFailure fromThrowable(Throwable t, boolean assertionFailure, String expected, String actual) {
         if (assertionFailure) {
-            return DefaultAssertionFailure.fromThrowable(t);
+            return DefaultAssertionFailure.fromThrowable(t, expected, actual);
         }
         StringWriter out = new StringWriter();
         PrintWriter wrt = new PrintWriter(out);
         t.printStackTrace(wrt);
         Throwable cause = t.getCause();
-        DefaultFailure causeFailure = cause != null && cause != t ? (DefaultFailure) fromThrowable(cause, false) : null;
+        DefaultFailure causeFailure = cause != null && cause != t ? (DefaultFailure) fromThrowable(cause, false, null, null) : null;
         return new DefaultFailure(t.getMessage(), out.toString(), causeFailure); // TODO restore cause field
     }
 }

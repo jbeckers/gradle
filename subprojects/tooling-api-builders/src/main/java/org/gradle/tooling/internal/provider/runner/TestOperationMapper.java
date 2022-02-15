@@ -133,7 +133,7 @@ class TestOperationMapper implements BuildOperationMapper<ExecuteTestBuildOperat
     private static List<InternalFailure> convertExceptions(List<TestFailure> failures) {
         List<InternalFailure> result = new ArrayList<>(failures.size());
         for (TestFailure failure : failures) {
-            result.add(DefaultFailure.fromThrowable(failure.getRawFailure(), failure.isAssertionFailure()));
+            result.add(DefaultFailure.fromThrowable(failure.getRawFailure(), failure.isAssertionFailure(), failure.getExpected(), failure.getActual()));
         }
         return result;
     }

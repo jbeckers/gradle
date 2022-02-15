@@ -63,7 +63,7 @@ public class JUnitTestClassExecutor implements Action<String> {
         }
 
         if (failure instanceof Throwable) {
-            TestFailure testFailure = new DefaultTestFailure((Throwable) failure, false);
+            TestFailure testFailure = new DefaultTestFailure((Throwable) failure, false, null, null);
             executionListener.testClassFinished(testFailure);
         } else {
             executionListener.testClassFinished(null);

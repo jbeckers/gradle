@@ -42,7 +42,7 @@ public class SuiteTestClassProcessor implements TestClassProcessor {
             processor.startProcessing(resultProcessor);
         } catch (Throwable t) {
             Throwable rawFailure = new TestSuiteExecutionException(String.format("Could not start %s.", suiteDescriptor), t);
-            TestFailure testFailure = new DefaultTestFailure(rawFailure, false);
+            TestFailure testFailure = new DefaultTestFailure(rawFailure, false, null, null);
             resultProcessor.failure(suiteDescriptor.getId(), testFailure);
         }
     }
@@ -53,7 +53,7 @@ public class SuiteTestClassProcessor implements TestClassProcessor {
             processor.processTestClass(testClass);
         } catch (Throwable t) {
             Throwable rawFailure = new TestSuiteExecutionException(String.format("Could not execute test class '%s'.", testClass.getTestClassName()), t);
-            TestFailure testFailure = new DefaultTestFailure(rawFailure, false);
+            TestFailure testFailure = new DefaultTestFailure(rawFailure, false, null, null);
             resultProcessor.failure(suiteDescriptor.getId(), testFailure);
         }
     }
@@ -64,7 +64,7 @@ public class SuiteTestClassProcessor implements TestClassProcessor {
             processor.stop();
         } catch (Throwable t) {
             Throwable rawFailure = new TestSuiteExecutionException(String.format("Could not complete execution for %s.", suiteDescriptor), t);
-            TestFailure testFailure = new DefaultTestFailure(rawFailure, false);
+            TestFailure testFailure = new DefaultTestFailure(rawFailure, false, null, null);
             resultProcessor.failure(suiteDescriptor.getId(), testFailure);
         } finally {
             resultProcessor.completed(suiteDescriptor.getId(), new TestCompleteEvent(clock.getCurrentTime()));

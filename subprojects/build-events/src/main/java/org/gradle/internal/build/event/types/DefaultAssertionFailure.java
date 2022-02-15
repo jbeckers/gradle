@@ -49,14 +49,12 @@ public class DefaultAssertionFailure implements Serializable, InternalAssertionF
         return actual;
     }
 
-    public static DefaultAssertionFailure fromThrowable(Throwable t) {
-        String expected = "<TODO_expected>";
-        String actual = "<TODO_actual>";
+    public static DefaultAssertionFailure fromThrowable(Throwable t, String expected, String actual) {
         StringWriter out = new StringWriter();
         PrintWriter wrt = new PrintWriter(out);
         t.printStackTrace(wrt);
         Throwable cause = t.getCause();
-        DefaultAssertionFailure causeFailure = cause != null && cause != t ? fromThrowable(cause) : null;
+        DefaultAssertionFailure causeFailure = cause != null && cause != t ? fromThrowable(cause, null, null) : null;
         return new DefaultAssertionFailure(t.getMessage(), out.toString(), null, expected, actual);
     }
 

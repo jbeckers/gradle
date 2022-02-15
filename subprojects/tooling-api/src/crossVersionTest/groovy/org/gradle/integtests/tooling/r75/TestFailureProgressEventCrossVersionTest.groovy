@@ -21,12 +21,14 @@ import org.gradle.integtests.tooling.fixture.TargetGradleVersion
 import org.gradle.integtests.tooling.fixture.ToolingApiVersion
 import org.gradle.tooling.AssertionFailure
 import org.gradle.tooling.BuildException
+import org.gradle.tooling.Failure
 import org.gradle.tooling.ProjectConnection
 import org.gradle.tooling.events.ProgressEvent
 import org.gradle.tooling.events.ProgressListener
 import org.gradle.tooling.events.test.TestFailureResult
 import org.gradle.tooling.events.test.TestFinishEvent
 import org.gradle.tooling.events.test.TestOperationResult
+import org.gradle.tooling.internal.consumer.DefaultAssertionFailure
 
 @ToolingApiVersion(">=7.5")
 @TargetGradleVersion(">=7.5")
@@ -54,9 +56,14 @@ class TestFailureProgressEventCrossVersionTest extends AbstractHttpCrossVersionS
                     assert false;
                 }
 
-                 @org.junit.Test
-                public void tes2() {
+                @org.junit.Test
+                public void test2() {
                     throw new RuntimeException("Boom");
+                }
+
+                @org.junit.Test
+                public void test3() {
+                    org.junit.Assert.assertEquals("This should fail", "myExpectedValue", "myActualValue");
                 }
             }
         '''
@@ -72,13 +79,13 @@ class TestFailureProgressEventCrossVersionTest extends AbstractHttpCrossVersionS
 
         then:
         thrown(BuildException)
-        progressEventCollector.failures.size() == 2
-        progressEventCollector.failures.findAll { it instanceof AssertionFailure }.size() == 1
+        progressEventCollector.failures.size() == 3
+        progressEventCollector.failures.findAll { it instanceof AssertionFailure }.size() == 2
     }
 
     class ProgressEventCollector implements ProgressListener {
 
-        public def failures = []
+        public List<Failure> failures = []
 
         @Override
         void statusChanged(ProgressEvent event) {

@@ -40,7 +40,7 @@ class TestReportDataCollectorSpec extends Specification {
         def result1 = new DefaultTestResult(SUCCESS, 100, 200, 1, 1, 0, [])
 
         def test2 = new DecoratingTestDescriptor(new DefaultTestDescriptor("1.1.2", "FooTest", "testMethod2"), clazz)
-        def result2 = new DefaultTestResult(FAILURE, 250, 300, 1, 0, 1, asList(new DefaultTestFailure(new RuntimeException("Boo!"), false)))
+        def result2 = new DefaultTestResult(FAILURE, 250, 300, 1, 0, 1, asList(new DefaultTestFailure(new RuntimeException("Boo!"), false, null, null)))
 
         when:
         //simulating TestNG, where we don't receive beforeSuite for classes
@@ -104,7 +104,7 @@ class TestReportDataCollectorSpec extends Specification {
 
     def "writes test outputs for failed suite"() {
         def suite = new DefaultTestSuiteDescriptor("1", "Suite")
-        def failure = new DefaultTestFailure(new RuntimeException("failure"), false)
+        def failure = new DefaultTestFailure(new RuntimeException("failure"), false, null, null)
         def result = new DefaultTestResult(FAILURE, 0, 0, 0, 0, 0, [failure])
 
         when:
@@ -119,8 +119,8 @@ class TestReportDataCollectorSpec extends Specification {
 
     def "collects failures for test"() {
         def test = new DefaultTestDescriptor("1.1.1", "FooTest", "testMethod")
-        def failure1 = new DefaultTestFailure(new RuntimeException("failure1"), false)
-        def failure2 = new DefaultTestFailure(new IOException("failure2"), false)
+        def failure1 = new DefaultTestFailure(new RuntimeException("failure1"), false, null, null)
+        def failure2 = new DefaultTestFailure(new IOException("failure2"), false, null, null)
         def result = new DefaultTestResult(SUCCESS, 0, 0, 1, 0, 1, [failure1, failure2])
 
         when:
@@ -140,7 +140,7 @@ class TestReportDataCollectorSpec extends Specification {
 
     def "handle PlaceholderExceptions for test failures"() {
         def test = new DefaultTestDescriptor("1.1.1", "FooTest", "testMethod")
-        def failure = new DefaultTestFailure(new PlaceholderException("OriginalClassName", "failure2", null, "toString()", null, null), false)
+        def failure = new DefaultTestFailure(new PlaceholderException("OriginalClassName", "failure2", null, "toString()", null, null), false, null, null)
         def result = new DefaultTestResult(SUCCESS, 0, 0, 1, 0, 1, [failure])
 
         when:
@@ -157,13 +157,13 @@ class TestReportDataCollectorSpec extends Specification {
 
     def "handles exception whose toString() method fails"() {
         def test = new DefaultTestDescriptor("1.1.1", "FooTest", "testMethod")
-        def failure2 = new DefaultTestFailure(new RuntimeException("failure2"), false)
-        def failure1 = new DefaultTestFailure( new RuntimeException("failure1") {
+        def failure2 = new DefaultTestFailure(new RuntimeException("failure2"), false, null, null)
+        def failure1 = new DefaultTestFailure(new RuntimeException("failure1") {
             @Override
             String toString() {
                 throw failure2.rawFailure
             }
-        }, false)
+        }, false, null, null)
         def result = new DefaultTestResult(SUCCESS, 0, 0, 1, 0, 1, [failure1])
 
         when:
@@ -179,13 +179,13 @@ class TestReportDataCollectorSpec extends Specification {
 
     def "handles exception whose printStackTrace() method fails"() {
         def test = new DefaultTestDescriptor("1.1.1", "FooTest", "testMethod")
-        def failure2 = new DefaultTestFailure(new RuntimeException("failure2"), false)
+        def failure2 = new DefaultTestFailure(new RuntimeException("failure2"), false, null, null)
         def failure1 = new DefaultTestFailure(new RuntimeException("failure1") {
             @Override
             void printStackTrace(PrintWriter s) {
                 throw failure2.rawFailure
             }
-        }, false)
+        }, false, null, null)
         def result = new DefaultTestResult(SUCCESS, 0, 0, 1, 0, 1, [failure1])
 
         when:
@@ -207,7 +207,7 @@ class TestReportDataCollectorSpec extends Specification {
         //simulating a scenario with suite failing badly enough so that no tests are executed
         collector.beforeSuite(root)
         collector.beforeSuite(testWorker)
-        collector.afterSuite(testWorker, new DefaultTestResult(FAILURE, 50, 450, 2, 1, 1, [new DefaultTestFailure(new RuntimeException("Boo!"), false)]))
+        collector.afterSuite(testWorker, new DefaultTestResult(FAILURE, 50, 450, 2, 1, 1, [new DefaultTestFailure(new RuntimeException("Boo!"), false, null, null)]))
         collector.afterSuite(root, new DefaultTestResult(FAILURE, 0, 500, 2, 1, 1, []))
 
         then:

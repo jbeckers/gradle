@@ -418,19 +418,19 @@ public class ATestNGFactoryClass {
 }
 
 public class ATestNGClassWithBrokenConstructor {
-    static TestFailure failure = new DefaultTestFailure(new RuntimeException(), false)
+    static TestFailure failure = new DefaultTestFailure(new RuntimeException(), false, null, null)
     def ATestNGClassWithBrokenConstructor() { throw failure.rawFailure }
     @org.testng.annotations.Test public void test() {}
 }
 
 public class ATestNGClassWithBrokenSetupMethod {
-    static TestFailure failure = new DefaultTestFailure(new RuntimeException(), false)
+    static TestFailure failure = new DefaultTestFailure(new RuntimeException(), false, null, null)
     @BeforeMethod public void beforeMethod() { throw failure.rawFailure }
     @org.testng.annotations.Test public void test() {}
 }
 
 public class ATestNGClassWithBrokenDependencyMethod {
-    static TestFailure failure = new DefaultTestFailure(new RuntimeException(), false)
+    static TestFailure failure = new DefaultTestFailure(new RuntimeException(), false, null, null)
     @org.testng.annotations.Test public void beforeMethod() { throw failure.rawFailure }
     @org.testng.annotations.Test(dependsOnMethods = 'beforeMethod') public void test() {}
 }
