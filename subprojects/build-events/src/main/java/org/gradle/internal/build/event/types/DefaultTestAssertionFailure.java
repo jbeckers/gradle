@@ -31,14 +31,15 @@ public class DefaultTestAssertionFailure implements Serializable, InternalTestAs
     private final InternalFailure cause;
     private final String expected;
     private final String actual;
+    private final Throwable rawFailure;
 
-    private DefaultTestAssertionFailure(String message, String description, InternalFailure cause, String expected, String actual) {
+    private DefaultTestAssertionFailure(String message, String description, InternalFailure cause, String expected, String actual, Throwable rawFailure) {
         this.message = message;
         this.description = description;
         this.cause = cause;
-
         this.expected = expected;
         this.actual = actual;
+        this.rawFailure = rawFailure;
     }
 
     public String getExpected() {
@@ -55,7 +56,7 @@ public class DefaultTestAssertionFailure implements Serializable, InternalTestAs
         t.printStackTrace(wrt);
         Throwable cause = t.getCause();
         InternalFailure causeFailure = cause != null && cause != t ? DefaultFailure.fromThrowable(cause) : null;
-        return new DefaultTestAssertionFailure(t.getMessage(), out.toString(), causeFailure, expected, actual);
+        return new DefaultTestAssertionFailure(t.getMessage(), out.toString(), causeFailure, expected, actual, t);
     }
 
     @Override
@@ -66,6 +67,10 @@ public class DefaultTestAssertionFailure implements Serializable, InternalTestAs
     @Override
     public String getDescription() {
         return description;
+    }
+
+    public Throwable getRawFailure() {
+        return rawFailure;
     }
 
     @Override

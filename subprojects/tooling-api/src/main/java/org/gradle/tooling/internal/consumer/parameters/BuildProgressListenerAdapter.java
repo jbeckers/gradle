@@ -748,10 +748,10 @@ public class BuildProgressListenerAdapter implements InternalBuildProgressListen
     private static Failure toFailure(InternalFailure origFailure) {
         if (origFailure instanceof InternalTestAssertionFailure) {
             InternalTestAssertionFailure assertionFailure = (InternalTestAssertionFailure) origFailure;
-            return new DefaultTestAssertionFailure(assertionFailure.getMessage(), assertionFailure.getDescription(), assertionFailure.getExpected(), assertionFailure.getActual(), toFailures(origFailure.getCauses()));
+            return new DefaultTestAssertionFailure(assertionFailure.getMessage(), assertionFailure.getDescription(), assertionFailure.getExpected(), assertionFailure.getActual(), toFailures(origFailure.getCauses()), ((InternalTestAssertionFailure) origFailure).getRawFailure());
         } else if (origFailure instanceof InternalTestFrameworkFailure) {
             InternalTestFrameworkFailure frameworkFailure = (InternalTestFrameworkFailure) origFailure;
-            return new DefaultTestFrameworkFailure(frameworkFailure.getMessage(), frameworkFailure.getDescription(), toFailures(origFailure.getCauses()));
+            return new DefaultTestFrameworkFailure(frameworkFailure.getMessage(), frameworkFailure.getDescription(), toFailures(origFailure.getCauses()), ((InternalTestFrameworkFailure) origFailure).getRawFailure());
         }
         return origFailure == null ? null : new DefaultFailure(
             origFailure.getMessage(),

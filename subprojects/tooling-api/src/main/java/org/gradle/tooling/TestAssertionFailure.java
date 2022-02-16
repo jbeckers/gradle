@@ -38,4 +38,11 @@ public interface TestAssertionFailure extends Failure {
      * @return actual or null.
      */
     String getActual();
+
+    /**
+     * The raw failure.
+     *
+     * @return the failure.
+     */
+    Throwable getRawFailure();
 }

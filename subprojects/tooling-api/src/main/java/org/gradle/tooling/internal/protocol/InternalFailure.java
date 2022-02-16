@@ -44,5 +44,4 @@ public interface InternalFailure {
      * @return the cause of the failure, can be null
      */
     List<? extends InternalFailure> getCauses();
-
 }

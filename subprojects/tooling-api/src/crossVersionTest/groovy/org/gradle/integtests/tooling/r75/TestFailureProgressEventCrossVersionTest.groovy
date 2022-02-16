@@ -85,6 +85,44 @@ class TestFailureProgressEventCrossVersionTest extends AbstractHttpCrossVersionS
         progressEventCollector.failures.findAll { it instanceof TestAssertionFailure && it.expected == 'myExpectedValue' && it.actual == 'myActualValue' }.size() == 1
     }
 
+    def "running spock test"() {
+        setup:
+        buildFile << """
+            plugins {
+                id('groovy')
+            }
+
+            repositories {
+                ${mavenCentralRepository()}
+            }
+            dependencies {
+                testImplementation('org.spockframework:spock-core:2.0-groovy-3.0')
+            }
+            test {
+                useJUnitPlatform()
+            }
+        """
+        file("src/test/groovy/MySpockTest.groovy") << """
+            class MySpockTest extends spock.lang.Specification {
+                def 'my test'() {
+                    expect: false
+                }
+            }
+        """
+        when:
+        def progressEventCollector = new ProgressEventCollector()
+        withConnection { ProjectConnection connection ->
+            connection.newBuild()
+                .addProgressListener(progressEventCollector)
+                .forTasks('test')
+                .run()
+        }
+
+        then:
+        thrown(BuildException)
+        println progressEventCollector.failures
+    }
+
     class ProgressEventCollector implements ProgressListener {
 
         public List<Failure> failures = []
