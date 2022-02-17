@@ -25,5 +25,5 @@ import org.gradle.api.Incubating;
 @Incubating
 public interface TestFrameworkFailure extends Failure {
 
-    Throwable getRawFailure();
+    String getStacktrace();
 }

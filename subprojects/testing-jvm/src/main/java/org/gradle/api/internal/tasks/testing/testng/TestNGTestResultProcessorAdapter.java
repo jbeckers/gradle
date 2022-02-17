@@ -38,6 +38,8 @@ import org.testng.ITestNGMethod;
 import org.testng.ITestResult;
 import org.testng.xml.XmlTest;
 
+import java.io.PrintWriter;
+import java.io.StringWriter;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
@@ -266,7 +268,10 @@ public class TestNGTestResultProcessorAdapter implements ISuiteListener, ITestLi
         if (resultType == TestResult.ResultType.FAILURE) {
             Throwable rawFailure = iTestResult.getThrowable();
             boolean assertionError = rawFailure instanceof AssertionError;
-            TestFailure testFailure = new DefaultTestFailure(rawFailure, assertionError, null, null);
+            StringWriter out = new StringWriter();
+            PrintWriter wrt = new PrintWriter(out);
+            rawFailure.printStackTrace(wrt);
+            TestFailure testFailure = new DefaultTestFailure(rawFailure, assertionError, null, null, rawFailure.getMessage(), out.toString());
             resultProcessor.failure(testId, testFailure);
         }
         resultProcessor.completed(testId, new TestCompleteEvent(iTestResult.getEndMillis(), resultType));
@@ -297,7 +302,10 @@ public class TestNGTestResultProcessorAdapter implements ISuiteListener, ITestLi
         Object parentId = classInfo == null ? null : classInfo.id;
         resultProcessor.started(test, new TestStartEvent(testResult.getStartMillis(), parentId));
 
-        TestFailure testFailure = new DefaultTestFailure(testResult.getThrowable(), false, null, null);
+        StringWriter out = new StringWriter();
+        PrintWriter wrt = new PrintWriter(out);
+        testResult.getThrowable().printStackTrace(wrt);
+        TestFailure testFailure = new DefaultTestFailure(testResult.getThrowable(), false, null, null, testResult.getThrowable().getMessage(), out.toString());
         resultProcessor.failure(test.getId(), testFailure);
         resultProcessor.completed(test.getId(), new TestCompleteEvent(testResult.getEndMillis(), TestResult.ResultType.FAILURE));
     }

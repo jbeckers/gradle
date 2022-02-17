@@ -63,7 +63,7 @@ class StateTrackingTestResultProcessorTest extends Specification {
 
     void createsAResultForATestWithFailure() {
         given:
-        def failure = new DefaultTestFailure(new RuntimeException(), false, null, null)
+        def failure = new DefaultTestFailure(new RuntimeException(), false, null, null, null, null)
         def test = new DefaultTestDescriptor("15", "Foo", "bar");
         def startEvent = new TestStartEvent(100L)
         def completeEvent = new TestCompleteEvent(200L)
@@ -84,8 +84,8 @@ class StateTrackingTestResultProcessorTest extends Specification {
 
     void createsAResultForATestWithMultipleFailures() {
         given:
-        def failure1 = new DefaultTestFailure(new RuntimeException(), false, null, null)
-        def failure2 = new DefaultTestFailure(new RuntimeException(), false, null, null)
+        def failure1 = new DefaultTestFailure(new RuntimeException(), false, null, null, null, null)
+        def failure2 = new DefaultTestFailure(new RuntimeException(), false, null, null, null, null)
         def test = new DefaultTestDescriptor("15", "Foo", "bar");
         def startEvent = new TestStartEvent(100L)
         def completeEvent = new TestCompleteEvent(200L)
@@ -157,7 +157,7 @@ class StateTrackingTestResultProcessorTest extends Specification {
         adapter.started(ok, new TestStartEvent(100L, 'suiteId'))
         adapter.started(broken, new TestStartEvent(100L, 'suiteId'))
         adapter.completed('okId', new TestCompleteEvent(200L))
-        adapter.failure('brokenId', new DefaultTestFailure(new RuntimeException(), false, null, null))
+        adapter.failure('brokenId', new DefaultTestFailure(new RuntimeException(), false, null, null, null, null))
         adapter.completed('brokenId', new TestCompleteEvent(200L))
         adapter.completed('suiteId', new TestCompleteEvent(200L))
 
@@ -209,7 +209,7 @@ class StateTrackingTestResultProcessorTest extends Specification {
         adapter.completed('ok', new TestCompleteEvent(200L))
         adapter.completed('suite1', new TestCompleteEvent(200L))
         adapter.started(broken, new TestStartEvent(100L, 'suite2'))
-        adapter.failure('broken', new DefaultTestFailure(new RuntimeException(), false, null, null))
+        adapter.failure('broken', new DefaultTestFailure(new RuntimeException(), false, null, null, null, null))
         adapter.completed('broken', new TestCompleteEvent(200L))
         adapter.completed('suite2', new TestCompleteEvent(200L))
         adapter.completed('root', new TestCompleteEvent(200L))
@@ -237,7 +237,7 @@ class StateTrackingTestResultProcessorTest extends Specification {
         given:
         def suite = new DefaultTestSuiteDescriptor("id", "FastTests");
         def test = new DefaultTestDescriptor("testid", "DogTest", "shouldBarkAtStrangers");
-        def failure = new DefaultTestFailure(new RuntimeException(), false, null, null)
+        def failure = new DefaultTestFailure(new RuntimeException(), false, null, null, null, null)
 
         when:
         adapter.started(suite, new TestStartEvent(100L))

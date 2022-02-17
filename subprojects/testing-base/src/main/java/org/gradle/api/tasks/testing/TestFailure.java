@@ -42,4 +42,8 @@ public interface TestFailure {
     String getExpected();
 
     String getActual();
+
+    String getMessage();
+
+    String getStacktrace();
 }

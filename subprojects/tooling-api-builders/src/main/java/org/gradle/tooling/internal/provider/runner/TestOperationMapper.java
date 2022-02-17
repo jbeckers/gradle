@@ -135,7 +135,7 @@ class TestOperationMapper implements BuildOperationMapper<ExecuteTestBuildOperat
         List<InternalFailure> result = new ArrayList<>(failures.size());
         for (TestFailure failure : failures) {
             if (failure.isAssertionFailure()) {
-                result.add(DefaultTestAssertionFailure.fromThrowable(failure.getRawFailure(), failure.getExpected(), failure.getActual()));
+                result.add(DefaultTestAssertionFailure.fromThrowable(failure.getRawFailure(), failure.getExpected(), failure.getActual(), failure.getMessage(), failure.getStacktrace()));
             } else {
                 result.add(DefaultTestFrameworkFailure.fromThrowable(failure.getRawFailure()));
             }

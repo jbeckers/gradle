@@ -31,15 +31,15 @@ public class DefaultTestAssertionFailure implements Serializable, InternalTestAs
     private final InternalFailure cause;
     private final String expected;
     private final String actual;
-    private final Throwable rawFailure;
+    private final String stacktrace;
 
-    private DefaultTestAssertionFailure(String message, String description, InternalFailure cause, String expected, String actual, Throwable rawFailure) {
+    private DefaultTestAssertionFailure(String message, String description, InternalFailure cause, String expected, String actual, String stacktrace) {
         this.message = message;
         this.description = description;
         this.cause = cause;
         this.expected = expected;
         this.actual = actual;
-        this.rawFailure = rawFailure;
+        this.stacktrace = stacktrace;
     }
 
     public String getExpected() {
@@ -50,13 +50,13 @@ public class DefaultTestAssertionFailure implements Serializable, InternalTestAs
         return actual;
     }
 
-    public static DefaultTestAssertionFailure fromThrowable(Throwable t, String expected, String actual) {
+    public static DefaultTestAssertionFailure fromThrowable(Throwable t, String expected, String actual, String message, String stacktrace) {
         StringWriter out = new StringWriter();
         PrintWriter wrt = new PrintWriter(out);
         t.printStackTrace(wrt);
         Throwable cause = t.getCause();
         InternalFailure causeFailure = cause != null && cause != t ? DefaultFailure.fromThrowable(cause) : null;
-        return new DefaultTestAssertionFailure(t.getMessage(), out.toString(), causeFailure, expected, actual, t);
+        return new DefaultTestAssertionFailure(message, out.toString(), causeFailure, expected, actual, stacktrace);
     }
 
     @Override
@@ -69,8 +69,8 @@ public class DefaultTestAssertionFailure implements Serializable, InternalTestAs
         return description;
     }
 
-    public Throwable getRawFailure() {
-        return rawFailure;
+    public String getStacktrace() {
+        return stacktrace;
     }
 
     @Override

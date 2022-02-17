@@ -22,9 +22,7 @@ package org.gradle.tooling.internal.protocol;
  */
 public interface InternalTestFrameworkFailure extends InternalFailure {
 
-    /**
-     * Returns the raw failure returned by the test framework.
-     * @return the raw failure
-     */
-    Throwable getRawFailure();
+    String getMessage();
+
+    String getStacktrace();
 }

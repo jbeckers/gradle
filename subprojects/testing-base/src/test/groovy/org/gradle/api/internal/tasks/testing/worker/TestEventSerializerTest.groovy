@@ -177,7 +177,7 @@ class TestEventSerializerTest extends SerializerSpec {
 
     def "serializes TestFailure"() {
         def rawFailure = new RuntimeException("cause");
-        def failure = new DefaultTestFailure(rawFailure, true, null, null)
+        def failure = new DefaultTestFailure(rawFailure, true, null, null, null, null)
 
         when:
         def result = serialize(failure, DefaultTestFailure)

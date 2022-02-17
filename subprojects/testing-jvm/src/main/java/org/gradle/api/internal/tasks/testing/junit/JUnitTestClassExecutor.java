@@ -33,6 +33,8 @@ import org.junit.runner.manipulation.NoTestsRemainException;
 import org.junit.runner.notification.RunListener;
 import org.junit.runner.notification.RunNotifier;
 
+import java.io.PrintWriter;
+import java.io.StringWriter;
 import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
@@ -63,7 +65,10 @@ public class JUnitTestClassExecutor implements Action<String> {
         }
 
         if (failure instanceof Throwable) {
-            TestFailure testFailure = new DefaultTestFailure((Throwable) failure, false, null, null);
+            StringWriter out = new StringWriter();
+            PrintWriter wrt = new PrintWriter(out);
+            ((Throwable) failure).printStackTrace(wrt);
+            TestFailure testFailure = new DefaultTestFailure((Throwable) failure, false, null, null, ((Throwable) failure).getMessage(), out.toString());
             executionListener.testClassFinished(testFailure);
         } else {
             executionListener.testClassFinished(null);

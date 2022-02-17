@@ -85,7 +85,9 @@ class TestFailureProgressEventCrossVersionTest extends AbstractHttpCrossVersionS
         thrown(BuildException)
         progressEventCollector.failures.size() == 2
         progressEventCollector.failures.findAll { it instanceof TestAssertionFailure }.size() == 1
-        progressEventCollector.failures.findAll { it instanceof TestAssertionFailure && it.expected == 'expected' && it.actual == 'actual' }.size() == 1
+        progressEventCollector.failures.findAll { it instanceof TestAssertionFailure }[0].message == 'This should be the error message ==> expected: <expected> but was: <actual>'
+        progressEventCollector.failures.findAll { it instanceof TestFrameworkFailure }.size() == 1
+        progressEventCollector.failures.findAll { it instanceof TestFrameworkFailure }[0].message == "Boom!"
     }
 
     def "Running junit 4 tests"() {

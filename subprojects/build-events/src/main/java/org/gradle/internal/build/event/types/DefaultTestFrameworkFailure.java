@@ -29,13 +29,13 @@ public class DefaultTestFrameworkFailure implements Serializable, InternalTestFr
     private final String message;
     private final String description;
     private final InternalFailure cause;
-    private final Throwable rawFailure;
+    private final String stacktrace;
 
-    private DefaultTestFrameworkFailure(String message, String description, InternalFailure cause, Throwable rawFailure) {
+    private DefaultTestFrameworkFailure(String message, String description, InternalFailure cause, String stacktrace) {
         this.message = message;
         this.description = description;
         this.cause = cause;
-        this.rawFailure = rawFailure;
+        this.stacktrace = stacktrace;
     }
 
     public static DefaultTestFrameworkFailure fromThrowable(Throwable t) {
@@ -44,7 +44,7 @@ public class DefaultTestFrameworkFailure implements Serializable, InternalTestFr
         t.printStackTrace(wrt);
         Throwable cause = t.getCause();
         InternalFailure causeFailure = cause != null && cause != t ? DefaultFailure.fromThrowable(cause) : null;
-        return new DefaultTestFrameworkFailure(t.getMessage(), out.toString(), causeFailure, t);
+        return new DefaultTestFrameworkFailure(t.getMessage(), out.toString(), causeFailure, out.toString());
     }
 
     @Override
@@ -58,8 +58,8 @@ public class DefaultTestFrameworkFailure implements Serializable, InternalTestFr
     }
 
     @Override
-    public Throwable getRawFailure() {
-        return rawFailure;
+    public String getStacktrace() {
+        return stacktrace;
     }
 
     @Override

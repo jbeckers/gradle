@@ -170,7 +170,9 @@ public class TestEventSerializer {
             boolean isAssertionFailure = decoder.readBoolean();
             String expected = decoder.readNullableString();
             String actual = decoder.readNullableString();
-            return new DefaultTestFailure(rawFailure, isAssertionFailure, expected, actual);
+            String message = decoder.readNullableString();
+            String stacktrace = decoder.readNullableString();
+            return new DefaultTestFailure(rawFailure, isAssertionFailure, expected, actual, message, stacktrace);
         }
 
         @Override
@@ -179,6 +181,8 @@ public class TestEventSerializer {
             encoder.writeBoolean(value.isAssertionFailure());
             encoder.writeNullableString(value.getExpected());
             encoder.writeNullableString(value.getActual());
+            encoder.writeNullableString(value.getMessage());
+            encoder.writeNullableString(value.getStacktrace());
         }
     }
 

@@ -21,6 +21,9 @@ import org.gradle.api.internal.tasks.testing.results.AttachParentTestResultProce
 import org.gradle.api.tasks.testing.TestFailure;
 import org.gradle.internal.time.Clock;
 
+import java.io.PrintWriter;
+import java.io.StringWriter;
+
 public class SuiteTestClassProcessor implements TestClassProcessor {
     private final TestClassProcessor processor;
     private final Clock clock;
@@ -42,7 +45,10 @@ public class SuiteTestClassProcessor implements TestClassProcessor {
             processor.startProcessing(resultProcessor);
         } catch (Throwable t) {
             Throwable rawFailure = new TestSuiteExecutionException(String.format("Could not start %s.", suiteDescriptor), t);
-            TestFailure testFailure = new DefaultTestFailure(rawFailure, false, null, null);
+            StringWriter out = new StringWriter();
+            PrintWriter wrt = new PrintWriter(out);
+            rawFailure.printStackTrace(wrt);
+            TestFailure testFailure = new DefaultTestFailure(rawFailure, false, null, null, rawFailure.getMessage(), out.toString());
             resultProcessor.failure(suiteDescriptor.getId(), testFailure);
         }
     }
@@ -53,7 +59,10 @@ public class SuiteTestClassProcessor implements TestClassProcessor {
             processor.processTestClass(testClass);
         } catch (Throwable t) {
             Throwable rawFailure = new TestSuiteExecutionException(String.format("Could not execute test class '%s'.", testClass.getTestClassName()), t);
-            TestFailure testFailure = new DefaultTestFailure(rawFailure, false, null, null);
+            StringWriter out = new StringWriter();
+            PrintWriter wrt = new PrintWriter(out);
+            rawFailure.printStackTrace(wrt);
+            TestFailure testFailure = new DefaultTestFailure(rawFailure, false, null, null, rawFailure.getMessage(), out.toString());
             resultProcessor.failure(suiteDescriptor.getId(), testFailure);
         }
     }
@@ -64,7 +73,10 @@ public class SuiteTestClassProcessor implements TestClassProcessor {
             processor.stop();
         } catch (Throwable t) {
             Throwable rawFailure = new TestSuiteExecutionException(String.format("Could not complete execution for %s.", suiteDescriptor), t);
-            TestFailure testFailure = new DefaultTestFailure(rawFailure, false, null, null);
+            StringWriter out = new StringWriter();
+            PrintWriter wrt = new PrintWriter(out);
+            rawFailure.printStackTrace(wrt);
+            TestFailure testFailure = new DefaultTestFailure(rawFailure, false, null, null, rawFailure.getMessage(), out.toString());
             resultProcessor.failure(suiteDescriptor.getId(), testFailure);
         } finally {
             resultProcessor.completed(suiteDescriptor.getId(), new TestCompleteEvent(clock.getCurrentTime()));

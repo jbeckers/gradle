@@ -36,6 +36,8 @@ import org.gradle.internal.time.Clock;
 import org.gradle.util.internal.TextUtil;
 
 import javax.annotation.Nullable;
+import java.io.PrintWriter;
+import java.io.StringWriter;
 import java.util.Deque;
 import java.util.Scanner;
 import java.util.regex.Matcher;
@@ -139,7 +141,10 @@ class XCTestScraper implements TextStream {
                         if (failed) {
                             resultType = TestResult.ResultType.FAILURE;
                             Throwable failure = new Throwable(Joiner.on(TextUtil.getPlatformLineSeparator()).join(xcTestDescriptor.getMessages()));
-                            TestFailure testFailure = new DefaultTestFailure(failure, false, null, null);
+                            StringWriter out = new StringWriter();
+                            PrintWriter wrt = new PrintWriter(out);
+                            failure.printStackTrace(wrt);
+                            TestFailure testFailure = new DefaultTestFailure(failure, false, null, null, failure.getMessage(), out.toString());
                             processor.failure(testDescriptor.getId(), testFailure);
                         }
 
@@ -187,7 +192,10 @@ class XCTestScraper implements TextStream {
                     testId = rootTestSuiteId;
                 }
 
-                TestFailure testFailure = new DefaultTestFailure(failure, false, null, null);
+                StringWriter out = new StringWriter();
+                PrintWriter wrt = new PrintWriter(out);
+                failure.printStackTrace(wrt);
+                TestFailure testFailure = new DefaultTestFailure(failure, false, null, null, failure.getMessage(), out.toString());
                 processor.failure(testId, testFailure);
                 testDescriptors.clear();
             }

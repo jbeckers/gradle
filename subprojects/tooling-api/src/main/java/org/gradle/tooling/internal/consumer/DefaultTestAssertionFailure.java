@@ -30,15 +30,15 @@ public class DefaultTestAssertionFailure implements TestAssertionFailure {
 
     private final String expected;
     private final String actual;
-    private final Throwable rawFailure;
+    private final String stacktrace;
 
-    public DefaultTestAssertionFailure(String message, String description, String expected, String actual, List<? extends Failure> causes, Throwable rawFailure) {
+    public DefaultTestAssertionFailure(String message, String description, String expected, String actual, List<? extends Failure> causes, String stacktrace) {
         this.message = message;
         this.description = description;
         this.causes = causes;
         this.expected = expected;
         this.actual = actual;
-        this.rawFailure = rawFailure;
+        this.stacktrace = stacktrace;
     }
 
     @Override
@@ -53,8 +53,8 @@ public class DefaultTestAssertionFailure implements TestAssertionFailure {
 
     @Nullable
     @Override
-    public Throwable getRawFailure() {
-        return rawFailure;
+    public String getStacktrace() {
+        return stacktrace;
     }
 
     @Nullable

@@ -24,8 +24,10 @@ public class DefaultTestFailure implements TestFailure {
     private final boolean isAssertionFailure;
     private final String expected;
     private final String actual;
+    private final String message;
+    private final String stacktrace;
 
-    public DefaultTestFailure(Throwable rawFailure, boolean isAssertionFailure, String expected, String actual) {
+    public DefaultTestFailure(Throwable rawFailure, boolean isAssertionFailure, String expected, String actual, String message, String stacktrace) {
         this.expected = expected;
         this.actual = actual;
         if (rawFailure == null) {
@@ -33,6 +35,8 @@ public class DefaultTestFailure implements TestFailure {
         }
         this.rawFailure = rawFailure;
         this.isAssertionFailure = isAssertionFailure;
+        this.message = message;
+        this.stacktrace = stacktrace;
     }
 
     @Override
@@ -55,6 +59,14 @@ public class DefaultTestFailure implements TestFailure {
         return actual;
     }
 
+    public String getMessage() {
+        return message;
+    }
+
+    public String getStacktrace() {
+        return stacktrace;
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) {
@@ -75,7 +87,13 @@ public class DefaultTestFailure implements TestFailure {
         if (expected != null ? !expected.equals(that.expected) : that.expected != null) {
             return false;
         }
-        return actual != null ? actual.equals(that.actual) : that.actual == null;
+        if (actual != null ? !actual.equals(that.actual) : that.actual != null) {
+            return false;
+        }
+        if (message != null ? !message.equals(that.message) : that.message != null) {
+            return false;
+        }
+        return stacktrace != null ? stacktrace.equals(that.stacktrace) : that.stacktrace == null;
     }
 
     @Override
@@ -84,6 +102,8 @@ public class DefaultTestFailure implements TestFailure {
         result = 31 * result + (isAssertionFailure ? 1 : 0);
         result = 31 * result + (expected != null ? expected.hashCode() : 0);
         result = 31 * result + (actual != null ? actual.hashCode() : 0);
+        result = 31 * result + (message != null ? message.hashCode() : 0);
+        result = 31 * result + (stacktrace != null ? stacktrace.hashCode() : 0);
         return result;
     }
 }

@@ -26,5 +26,7 @@ public interface InternalTestAssertionFailure extends InternalFailure {
 
     String getActual();
 
-    Throwable getRawFailure();
+    String getMessage();
+
+    String getStacktrace();
 }

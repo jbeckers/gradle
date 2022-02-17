@@ -44,5 +44,5 @@ public interface TestAssertionFailure extends Failure {
      *
      * @return the failure.
      */
-    Throwable getRawFailure();
+    String getStacktrace();
 }
