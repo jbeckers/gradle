@@ -103,7 +103,10 @@ public class JUnitPlatformTestExecutionListener implements TestExecutionListener
             reportStartedUnlessAlreadyStarted(testIdentifier);
             Throwable failure = testExecutionResult.getThrowable().orElseGet(() -> new AssertionError("test failed but did not report an exception"));
             if (testIdentifier.isTest()) {
-                TestFailure testFailure = new DefaultTestFailure(failure, failure.getClass().getName().contains("Assertion"), null, null); // TODO why AssertionFailedError is not available here? OpenTest4j is an implementation dependency.
+                boolean isAssertionFailure = failure instanceof AssertionError;
+                String expected = readAssertionValueReflectively("getExpected", failure);
+                String actual = readAssertionValueReflectively("getActual", failure);
+                TestFailure testFailure = new DefaultTestFailure(failure, isAssertionFailure, expected, actual);
                 resultProcessor.failure(getId(testIdentifier), testFailure);
             } else {
                 TestDescriptorInternal syntheticTestDescriptor = createSyntheticTestDescriptorForContainer(testIdentifier);
@@ -116,6 +119,20 @@ public class JUnitPlatformTestExecutionListener implements TestExecutionListener
         if (wasStarted(testIdentifier)) {
             resultProcessor.completed(getId(testIdentifier), completeEvent());
         }
+    }
+
+    private static String readAssertionValueReflectively(String getterName, Throwable failure) {
+        // AssertionFailedError is not available on the compile classpath
+        if (failure.getClass().getCanonicalName().equals("org.opentest4j.AssertionFailedError")) {
+            try {
+                Object expectedWrapper = failure.getClass().getMethod(getterName).invoke(failure);
+                if (expectedWrapper != null) {
+                    return (String) expectedWrapper.getClass().getMethod("getStringRepresentation").invoke(expectedWrapper);
+                }
+            } catch (Exception ignore) {
+            }
+        }
+        return null;
     }
 
     private void reportStartedUnlessAlreadyStarted(TestIdentifier testIdentifier) {

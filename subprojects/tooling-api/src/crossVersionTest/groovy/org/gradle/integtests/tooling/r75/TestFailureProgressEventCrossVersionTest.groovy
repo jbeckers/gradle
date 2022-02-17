@@ -16,6 +16,7 @@
 
 package org.gradle.integtests.tooling.r75
 
+import org.gradle.integtests.fixtures.RepoScriptBlockUtil
 import org.gradle.integtests.tooling.fixture.AbstractHttpCrossVersionSpec
 import org.gradle.integtests.tooling.fixture.TargetGradleVersion
 import org.gradle.integtests.tooling.fixture.ToolingApiVersion
@@ -34,7 +35,60 @@ import org.gradle.tooling.events.test.TestOperationResult
 @TargetGradleVersion(">=7.5")
 class TestFailureProgressEventCrossVersionTest extends AbstractHttpCrossVersionSpec {
 
-    def "Returns dedicated progress event for assertion failure"() {
+    def "Running junit 5 tests"() {
+        setup:
+        buildFile << """
+            plugins {
+                id 'java-library'
+            }
+
+            ${mavenCentralRepository()}
+
+            dependencies {
+                testImplementation 'org.junit.jupiter:junit-jupiter-api:5.7.1'
+                testImplementation 'org.junit.jupiter:junit-jupiter-engine:5.7.1'
+            }
+
+            test {
+                useJUnitPlatform()
+            }
+        """
+
+        file('src/test/java/org/gradle/JUnitJupiterTest.java') << '''
+            package org.gradle;
+
+            import org.junit.jupiter.api.Test;
+
+            public class JUnitJupiterTest {
+                @Test
+                public void fail() {
+                    org.junit.jupiter.api.Assertions.assertEquals("expected", "actual", "This should be the error message");
+                }
+
+                @Test
+                public void fail2() {
+                    throw new RuntimeException("Boom!");
+                }
+            }
+        '''
+
+        when:
+        def progressEventCollector = new ProgressEventCollector()
+        withConnection { ProjectConnection connection ->
+            connection.newBuild()
+                .addProgressListener(progressEventCollector)
+                .forTasks('test')
+                .run()
+        }
+
+        then:
+        thrown(BuildException)
+        progressEventCollector.failures.size() == 2
+        progressEventCollector.failures.findAll { it instanceof TestAssertionFailure }.size() == 1
+        progressEventCollector.failures.findAll { it instanceof TestAssertionFailure && it.expected == 'expected' && it.actual == 'actual' }.size() == 1
+    }
+
+    def "Running junit 4 tests"() {
         setup:
         buildFile << """
             plugins {
@@ -118,9 +172,60 @@ class TestFailureProgressEventCrossVersionTest extends AbstractHttpCrossVersionS
                 .run()
         }
 
+
         then:
         thrown(BuildException)
         println progressEventCollector.failures
+    }
+
+    def "Running testNG test"() {
+        setup:
+        buildFile << """
+            apply plugin: 'java'
+            ${RepoScriptBlockUtil.mavenCentralRepository()}
+            testing {
+                suites {
+                    test {
+                        useTestNG('7.4.0')
+                    }
+                }
+            }
+        """
+
+        file('src/test/java/AppException.java') << 'public class AppException extends Exception {}'
+        file('src/test/java/SomeTest.java') << '''
+            public class SomeTest {
+                @org.testng.annotations.Test
+                public void pass() {}
+
+                @org.testng.annotations.Test
+                public void fail() { assert false; }
+
+                @org.testng.annotations.Test
+                public void knownError() { throw new RuntimeException("message"); }
+
+                @org.testng.annotations.Test
+                public void unknownError() throws AppException { throw new AppException(); }
+
+                @org.testng.annotations.Test
+                public void assertionError() { org.testng.Assert.assertEquals("myExpectedValue", "myActualValue"); }
+            }
+        '''
+
+        when:
+        def progressEventCollector = new ProgressEventCollector()
+        withConnection { ProjectConnection connection ->
+            connection.newBuild()
+                .addProgressListener(progressEventCollector)
+                .forTasks('test')
+                .run()
+        }
+
+        then:
+        thrown(BuildException)
+        progressEventCollector.failures.size() == 4
+        progressEventCollector.failures.findAll { it instanceof TestAssertionFailure }.size() == 2
+        progressEventCollector.failures.findAll { it instanceof TestFrameworkFailure }.size() == 2
     }
 
     class ProgressEventCollector implements ProgressListener {
@@ -130,7 +235,6 @@ class TestFailureProgressEventCrossVersionTest extends AbstractHttpCrossVersionS
         @Override
         void statusChanged(ProgressEvent event) {
             if (event instanceof TestFinishEvent) {
-                println event
                 TestOperationResult result = ((TestFinishEvent) event).getResult();
                 if (result instanceof TestFailureResult) {
                     failures += ((TestFailureResult)result).failures

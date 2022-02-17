@@ -88,7 +88,6 @@ public class JUnitTestEventAdapter extends RunListener {
             expected = comparisonFailure.getExpected();
             actual = comparisonFailure.getActual();
         }
-
         TestFailure testFailure = new DefaultTestFailure(exception, exception instanceof AssertionError, expected, actual);
         resultProcessor.failure(testInternal.getId(), testFailure);
         if (needEndEvent) {

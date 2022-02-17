@@ -264,7 +264,9 @@ public class TestNGTestResultProcessorAdapter implements ISuiteListener, ITestLi
             resultProcessor.started(new DefaultTestMethodDescriptor(testId, iTestResult.getTestClass().getName(), iTestResult.getName()), startEvent);
         }
         if (resultType == TestResult.ResultType.FAILURE) {
-            TestFailure testFailure = new DefaultTestFailure(iTestResult.getThrowable(), false, null, null);
+            Throwable rawFailure = iTestResult.getThrowable();
+            boolean assertionError = rawFailure instanceof AssertionError;
+            TestFailure testFailure = new DefaultTestFailure(rawFailure, assertionError, null, null);
             resultProcessor.failure(testId, testFailure);
         }
         resultProcessor.completed(testId, new TestCompleteEvent(iTestResult.getEndMillis(), resultType));
