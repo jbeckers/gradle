@@ -15,12 +15,10 @@
  */
 package org.gradle.internal.build.event.types;
 
-import org.gradle.tooling.internal.protocol.InternalTestAssertionFailure;
 import org.gradle.tooling.internal.protocol.InternalFailure;
+import org.gradle.tooling.internal.protocol.InternalTestAssertionFailure;
 
-import java.io.PrintWriter;
 import java.io.Serializable;
-import java.io.StringWriter;
 import java.util.Collections;
 import java.util.List;
 
@@ -50,15 +48,6 @@ public class DefaultTestAssertionFailure implements Serializable, InternalTestAs
         return actual;
     }
 
-    public static DefaultTestAssertionFailure fromThrowable(Throwable t, String expected, String actual, String message, String stacktrace) {
-        StringWriter out = new StringWriter();
-        PrintWriter wrt = new PrintWriter(out);
-        t.printStackTrace(wrt);
-        Throwable cause = t.getCause();
-        InternalFailure causeFailure = cause != null && cause != t ? DefaultFailure.fromThrowable(cause) : null;
-        return new DefaultTestAssertionFailure(message, out.toString(), causeFailure, expected, actual, stacktrace);
-    }
-
     @Override
     public String getMessage() {
         return message;
@@ -76,5 +65,11 @@ public class DefaultTestAssertionFailure implements Serializable, InternalTestAs
     @Override
     public List<? extends InternalFailure> getCauses() {
         return Collections.singletonList(cause);
+    }
+
+    public static DefaultTestAssertionFailure fromThrowable(Throwable t, String message, String stacktrace, String expected, String actual) {
+        Throwable cause = t.getCause();
+        InternalFailure causeFailure = cause != null && cause != t ? DefaultFailure.fromThrowable(cause) : null;
+        return new DefaultTestAssertionFailure(message, stacktrace, causeFailure, expected, actual, stacktrace);
     }
 }

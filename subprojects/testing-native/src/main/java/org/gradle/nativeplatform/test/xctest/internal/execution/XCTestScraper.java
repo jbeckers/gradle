@@ -144,7 +144,7 @@ class XCTestScraper implements TextStream {
                             StringWriter out = new StringWriter();
                             PrintWriter wrt = new PrintWriter(out);
                             failure.printStackTrace(wrt);
-                            TestFailure testFailure = new DefaultTestFailure(failure, false, null, null, failure.getMessage(), out.toString());
+                            TestFailure testFailure = DefaultTestFailure.fromTestFrameworkFailure(failure);
                             processor.failure(testDescriptor.getId(), testFailure);
                         }
 
@@ -195,7 +195,7 @@ class XCTestScraper implements TextStream {
                 StringWriter out = new StringWriter();
                 PrintWriter wrt = new PrintWriter(out);
                 failure.printStackTrace(wrt);
-                TestFailure testFailure = new DefaultTestFailure(failure, false, null, null, failure.getMessage(), out.toString());
+                TestFailure testFailure = DefaultTestFailure.fromTestFrameworkFailure(failure);
                 processor.failure(testId, testFailure);
                 testDescriptors.clear();
             }

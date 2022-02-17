@@ -31,8 +31,6 @@ import org.junit.runner.Description;
 import org.junit.runner.notification.Failure;
 import org.junit.runner.notification.RunListener;
 
-import java.io.PrintWriter;
-import java.io.StringWriter;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
@@ -82,18 +80,20 @@ public class JUnitTestEventAdapter extends RunListener {
 
         Throwable exception = failure.getException();
 
-        String expected = null;
-        String actual = null;
-        boolean isAssertionFailure = exception instanceof ComparisonFailure;
+        boolean isAssertionFailure = exception instanceof AssertionError;
+        TestFailure testFailure;
         if (isAssertionFailure) {
-            ComparisonFailure comparisonFailure = (ComparisonFailure) exception;
-            expected = comparisonFailure.getExpected();
-            actual = comparisonFailure.getActual();
+            String expected = null;
+            String actual = null;
+            if (exception instanceof ComparisonFailure) {
+                ComparisonFailure comparisonFailure = (ComparisonFailure) exception;
+                expected = comparisonFailure.getExpected();
+                actual = comparisonFailure.getActual();
+            }
+            testFailure = DefaultTestFailure.fromTestAssertionFailure(exception, expected, actual);
+        } else {
+            testFailure = DefaultTestFailure.fromTestFrameworkFailure(exception);
         }
-        StringWriter out = new StringWriter();
-        PrintWriter wrt = new PrintWriter(out);
-        exception.printStackTrace(wrt);
-        TestFailure testFailure = new DefaultTestFailure(exception, exception instanceof AssertionError, expected, actual, exception.getMessage(), out.toString());
         resultProcessor.failure(testInternal.getId(), testFailure);
         if (needEndEvent) {
             resultProcessor.completed(testInternal.getId(), new TestCompleteEvent(clock.getCurrentTime()));

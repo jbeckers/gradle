@@ -45,10 +45,7 @@ public class SuiteTestClassProcessor implements TestClassProcessor {
             processor.startProcessing(resultProcessor);
         } catch (Throwable t) {
             Throwable rawFailure = new TestSuiteExecutionException(String.format("Could not start %s.", suiteDescriptor), t);
-            StringWriter out = new StringWriter();
-            PrintWriter wrt = new PrintWriter(out);
-            rawFailure.printStackTrace(wrt);
-            TestFailure testFailure = new DefaultTestFailure(rawFailure, false, null, null, rawFailure.getMessage(), out.toString());
+            TestFailure testFailure = DefaultTestFailure.fromTestFrameworkFailure(rawFailure);
             resultProcessor.failure(suiteDescriptor.getId(), testFailure);
         }
     }
@@ -59,10 +56,7 @@ public class SuiteTestClassProcessor implements TestClassProcessor {
             processor.processTestClass(testClass);
         } catch (Throwable t) {
             Throwable rawFailure = new TestSuiteExecutionException(String.format("Could not execute test class '%s'.", testClass.getTestClassName()), t);
-            StringWriter out = new StringWriter();
-            PrintWriter wrt = new PrintWriter(out);
-            rawFailure.printStackTrace(wrt);
-            TestFailure testFailure = new DefaultTestFailure(rawFailure, false, null, null, rawFailure.getMessage(), out.toString());
+            TestFailure testFailure = DefaultTestFailure.fromTestFrameworkFailure(rawFailure);
             resultProcessor.failure(suiteDescriptor.getId(), testFailure);
         }
     }
@@ -73,10 +67,7 @@ public class SuiteTestClassProcessor implements TestClassProcessor {
             processor.stop();
         } catch (Throwable t) {
             Throwable rawFailure = new TestSuiteExecutionException(String.format("Could not complete execution for %s.", suiteDescriptor), t);
-            StringWriter out = new StringWriter();
-            PrintWriter wrt = new PrintWriter(out);
-            rawFailure.printStackTrace(wrt);
-            TestFailure testFailure = new DefaultTestFailure(rawFailure, false, null, null, rawFailure.getMessage(), out.toString());
+            TestFailure testFailure = DefaultTestFailure.fromTestFrameworkFailure(rawFailure);
             resultProcessor.failure(suiteDescriptor.getId(), testFailure);
         } finally {
             resultProcessor.completed(suiteDescriptor.getId(), new TestCompleteEvent(clock.getCurrentTime()));

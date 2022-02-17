@@ -268,10 +268,12 @@ public class TestNGTestResultProcessorAdapter implements ISuiteListener, ITestLi
         if (resultType == TestResult.ResultType.FAILURE) {
             Throwable rawFailure = iTestResult.getThrowable();
             boolean assertionError = rawFailure instanceof AssertionError;
-            StringWriter out = new StringWriter();
-            PrintWriter wrt = new PrintWriter(out);
-            rawFailure.printStackTrace(wrt);
-            TestFailure testFailure = new DefaultTestFailure(rawFailure, assertionError, null, null, rawFailure.getMessage(), out.toString());
+            TestFailure testFailure;
+            if (assertionError) {
+                testFailure = DefaultTestFailure.fromTestAssertionFailure(rawFailure, null, null);
+            } else {
+                testFailure = DefaultTestFailure.fromTestFrameworkFailure(rawFailure);
+            }
             resultProcessor.failure(testId, testFailure);
         }
         resultProcessor.completed(testId, new TestCompleteEvent(iTestResult.getEndMillis(), resultType));
@@ -305,7 +307,7 @@ public class TestNGTestResultProcessorAdapter implements ISuiteListener, ITestLi
         StringWriter out = new StringWriter();
         PrintWriter wrt = new PrintWriter(out);
         testResult.getThrowable().printStackTrace(wrt);
-        TestFailure testFailure = new DefaultTestFailure(testResult.getThrowable(), false, null, null, testResult.getThrowable().getMessage(), out.toString());
+        TestFailure testFailure = DefaultTestFailure.fromTestFrameworkFailure(testResult.getThrowable());
         resultProcessor.failure(test.getId(), testFailure);
         resultProcessor.completed(test.getId(), new TestCompleteEvent(testResult.getEndMillis(), TestResult.ResultType.FAILURE));
     }

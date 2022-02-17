@@ -36,10 +36,7 @@ import org.junit.platform.engine.support.descriptor.ClassSource;
 import org.junit.platform.launcher.TestExecutionListener;
 import org.junit.platform.launcher.TestIdentifier;
 import org.junit.platform.launcher.TestPlan;
-import org.opentest4j.AssertionFailedError;
 
-import java.io.PrintWriter;
-import java.io.StringWriter;
 import java.util.LinkedHashSet;
 import java.util.Objects;
 import java.util.Optional;
@@ -105,20 +102,21 @@ public class JUnitPlatformTestExecutionListener implements TestExecutionListener
         if (testExecutionResult.getStatus() == FAILED) {
             reportStartedUnlessAlreadyStarted(testIdentifier);
             Throwable failure = testExecutionResult.getThrowable().orElseGet(() -> new AssertionError("test failed but did not report an exception"));
-            StringWriter out = new StringWriter();
-            PrintWriter wrt = new PrintWriter(out);
-            failure.printStackTrace(wrt);
             if (testIdentifier.isTest()) {
                 boolean isAssertionFailure = failure instanceof AssertionError;
-                String expected = readAssertionValueReflectively("getExpected", failure);
-                String actual = readAssertionValueReflectively("getActual", failure);
-                TestFailure testFailure = new DefaultTestFailure(failure, isAssertionFailure, expected, actual, failure.getMessage(), out.toString());
+                TestFailure testFailure;
+                if (isAssertionFailure) {
+                    String expected = readAssertionValueReflectively("getExpected", failure);
+                    String actual = readAssertionValueReflectively("getActual", failure);
+                    testFailure = DefaultTestFailure.fromTestAssertionFailure(failure, expected, actual);
+                } else {
+                    testFailure = DefaultTestFailure.fromTestFrameworkFailure(failure);
+                }
                 resultProcessor.failure(getId(testIdentifier), testFailure);
             } else {
                 TestDescriptorInternal syntheticTestDescriptor = createSyntheticTestDescriptorForContainer(testIdentifier);
                 resultProcessor.started(syntheticTestDescriptor, startEvent(getId(testIdentifier)));
-
-                TestFailure testFailure = new DefaultTestFailure(failure, false, null, null, failure.getMessage(), out.toString());
+                TestFailure testFailure = DefaultTestFailure.fromTestFrameworkFailure(failure);
                 resultProcessor.failure(syntheticTestDescriptor.getId(), testFailure);
                 resultProcessor.completed(syntheticTestDescriptor.getId(), completeEvent());
             }

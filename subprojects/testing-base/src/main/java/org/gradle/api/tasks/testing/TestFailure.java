@@ -33,17 +33,9 @@ public interface TestFailure {
     Throwable getRawFailure();
 
     /**
-     * Returns whether the failure is recognized as an assertion failure.
+     * Returns structural information about the failure.
      *
-     * @return true if the failure is recognized as an assertion failure, false otherwise
+     * @return the failure structure
      */
-    boolean isAssertionFailure();
-
-    String getExpected();
-
-    String getActual();
-
-    String getMessage();
-
-    String getStacktrace();
+    TestFailureDetails getDetails();
 }

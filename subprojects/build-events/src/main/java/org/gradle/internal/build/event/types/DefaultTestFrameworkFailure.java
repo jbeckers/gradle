@@ -18,9 +18,7 @@ package org.gradle.internal.build.event.types;
 import org.gradle.tooling.internal.protocol.InternalFailure;
 import org.gradle.tooling.internal.protocol.InternalTestFrameworkFailure;
 
-import java.io.PrintWriter;
 import java.io.Serializable;
-import java.io.StringWriter;
 import java.util.Collections;
 import java.util.List;
 
@@ -38,13 +36,10 @@ public class DefaultTestFrameworkFailure implements Serializable, InternalTestFr
         this.stacktrace = stacktrace;
     }
 
-    public static DefaultTestFrameworkFailure fromThrowable(Throwable t) {
-        StringWriter out = new StringWriter();
-        PrintWriter wrt = new PrintWriter(out);
-        t.printStackTrace(wrt);
+    public static DefaultTestFrameworkFailure fromThrowable(Throwable t, String message, String stacktrace) {
         Throwable cause = t.getCause();
         InternalFailure causeFailure = cause != null && cause != t ? DefaultFailure.fromThrowable(cause) : null;
-        return new DefaultTestFrameworkFailure(t.getMessage(), out.toString(), causeFailure, out.toString());
+        return new DefaultTestFrameworkFailure(message, stacktrace, causeFailure, stacktrace);
     }
 
     @Override

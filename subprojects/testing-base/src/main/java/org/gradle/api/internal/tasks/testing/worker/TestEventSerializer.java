@@ -21,6 +21,7 @@ import org.gradle.api.internal.tasks.testing.DefaultTestClassDescriptor;
 import org.gradle.api.internal.tasks.testing.DefaultTestClassRunInfo;
 import org.gradle.api.internal.tasks.testing.DefaultTestDescriptor;
 import org.gradle.api.internal.tasks.testing.DefaultTestFailure;
+import org.gradle.api.internal.tasks.testing.DefaultTestFailureDetails;
 import org.gradle.api.internal.tasks.testing.DefaultTestMethodDescriptor;
 import org.gradle.api.internal.tasks.testing.DefaultTestOutputEvent;
 import org.gradle.api.internal.tasks.testing.DefaultTestSuiteDescriptor;
@@ -167,22 +168,22 @@ public class TestEventSerializer {
         @Override
         public DefaultTestFailure read(Decoder decoder) throws Exception {
             Throwable rawFailure = throwableSerializer.read(decoder);
+            String message = decoder.readNullableString();
+            String stacktrace = decoder.readNullableString();
             boolean isAssertionFailure = decoder.readBoolean();
             String expected = decoder.readNullableString();
             String actual = decoder.readNullableString();
-            String message = decoder.readNullableString();
-            String stacktrace = decoder.readNullableString();
-            return new DefaultTestFailure(rawFailure, isAssertionFailure, expected, actual, message, stacktrace);
+            return new DefaultTestFailure(rawFailure, new DefaultTestFailureDetails(message, stacktrace, isAssertionFailure, expected, actual));
         }
 
         @Override
         public void write(Encoder encoder, DefaultTestFailure value) throws Exception {
             throwableSerializer.write(encoder, value.getRawFailure());
-            encoder.writeBoolean(value.isAssertionFailure());
-            encoder.writeNullableString(value.getExpected());
-            encoder.writeNullableString(value.getActual());
-            encoder.writeNullableString(value.getMessage());
-            encoder.writeNullableString(value.getStacktrace());
+            encoder.writeNullableString(value.getDetails().getMessage());
+            encoder.writeNullableString(value.getDetails().getStacktrace());
+            encoder.writeBoolean(value.getDetails().isAssertionFailure());
+            encoder.writeNullableString(value.getDetails().getExpected());
+            encoder.writeNullableString(value.getDetails().getActual());
         }
     }
 

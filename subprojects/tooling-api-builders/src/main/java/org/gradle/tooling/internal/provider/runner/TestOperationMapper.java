@@ -134,10 +134,20 @@ class TestOperationMapper implements BuildOperationMapper<ExecuteTestBuildOperat
     private static List<InternalFailure> convertExceptions(List<TestFailure> failures) {
         List<InternalFailure> result = new ArrayList<>(failures.size());
         for (TestFailure failure : failures) {
-            if (failure.isAssertionFailure()) {
-                result.add(DefaultTestAssertionFailure.fromThrowable(failure.getRawFailure(), failure.getExpected(), failure.getActual(), failure.getMessage(), failure.getStacktrace()));
+            if (failure.getDetails().isAssertionFailure()) {
+                result.add(DefaultTestAssertionFailure.fromThrowable(
+                    failure.getRawFailure(),
+                    failure.getDetails().getMessage(),
+                    failure.getDetails().getStacktrace(),
+                    failure.getDetails().getExpected(),
+                    failure.getDetails().getActual()
+                ));
             } else {
-                result.add(DefaultTestFrameworkFailure.fromThrowable(failure.getRawFailure()));
+                result.add(DefaultTestFrameworkFailure.fromThrowable(
+                    failure.getRawFailure(),
+                    failure.getDetails().getMessage(),
+                    failure.getDetails().getStacktrace()
+                ));
             }
         }
         return result;

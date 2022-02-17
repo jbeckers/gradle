@@ -17,26 +17,19 @@
 package org.gradle.api.internal.tasks.testing;
 
 import org.gradle.api.tasks.testing.TestFailure;
+import org.gradle.api.tasks.testing.TestFailureDetails;
+
+import java.io.PrintWriter;
+import java.io.StringWriter;
 
 public class DefaultTestFailure implements TestFailure {
 
     private final Throwable rawFailure;
-    private final boolean isAssertionFailure;
-    private final String expected;
-    private final String actual;
-    private final String message;
-    private final String stacktrace;
+    private final TestFailureDetails details;
 
-    public DefaultTestFailure(Throwable rawFailure, boolean isAssertionFailure, String expected, String actual, String message, String stacktrace) {
-        this.expected = expected;
-        this.actual = actual;
-        if (rawFailure == null) {
-            throw new RuntimeException(new IllegalAccessException("This should not happen"));
-        }
+    public DefaultTestFailure(Throwable rawFailure, TestFailureDetails details) {
         this.rawFailure = rawFailure;
-        this.isAssertionFailure = isAssertionFailure;
-        this.message = message;
-        this.stacktrace = stacktrace;
+        this.details = details;
     }
 
     @Override
@@ -45,26 +38,8 @@ public class DefaultTestFailure implements TestFailure {
     }
 
     @Override
-    public boolean isAssertionFailure() {
-        return isAssertionFailure;
-    }
-
-    @Override
-    public String getExpected() {
-        return expected;
-    }
-
-    @Override
-    public String getActual() {
-        return actual;
-    }
-
-    public String getMessage() {
-        return message;
-    }
-
-    public String getStacktrace() {
-        return stacktrace;
+    public TestFailureDetails getDetails() {
+        return details;
     }
 
     @Override
@@ -78,32 +53,33 @@ public class DefaultTestFailure implements TestFailure {
 
         DefaultTestFailure that = (DefaultTestFailure) o;
 
-        if (isAssertionFailure != that.isAssertionFailure) {
-            return false;
-        }
         if (rawFailure != null ? !rawFailure.equals(that.rawFailure) : that.rawFailure != null) {
             return false;
         }
-        if (expected != null ? !expected.equals(that.expected) : that.expected != null) {
-            return false;
-        }
-        if (actual != null ? !actual.equals(that.actual) : that.actual != null) {
-            return false;
-        }
-        if (message != null ? !message.equals(that.message) : that.message != null) {
-            return false;
-        }
-        return stacktrace != null ? stacktrace.equals(that.stacktrace) : that.stacktrace == null;
+        return details != null ? details.equals(that.details) : that.details == null;
     }
 
     @Override
     public int hashCode() {
         int result = rawFailure != null ? rawFailure.hashCode() : 0;
-        result = 31 * result + (isAssertionFailure ? 1 : 0);
-        result = 31 * result + (expected != null ? expected.hashCode() : 0);
-        result = 31 * result + (actual != null ? actual.hashCode() : 0);
-        result = 31 * result + (message != null ? message.hashCode() : 0);
-        result = 31 * result + (stacktrace != null ? stacktrace.hashCode() : 0);
+        result = 31 * result + (details != null ? details.hashCode() : 0);
         return result;
+    }
+
+    public static TestFailure fromTestAssertionFailure(Throwable failure, String expected, String actual) {
+        DefaultTestFailureDetails details = new DefaultTestFailureDetails(failure.getMessage(), stacktraceOf(failure), true, expected, actual);
+        return new DefaultTestFailure(failure, details);
+    }
+
+    public static TestFailure fromTestFrameworkFailure(Throwable failure) {
+        DefaultTestFailureDetails details = new DefaultTestFailureDetails(failure.getMessage(), stacktraceOf(failure), false, null, null);
+        return new DefaultTestFailure(failure, details);
+    }
+
+    private static String stacktraceOf(Throwable t) {
+        StringWriter out = new StringWriter();
+        PrintWriter wrt = new PrintWriter(out);
+        t.printStackTrace(wrt);
+        return out.toString();
     }
 }
