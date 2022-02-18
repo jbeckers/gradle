@@ -39,8 +39,10 @@ public class TestNGSpec implements Serializable {
     private final String configFailurePolicy;
     private final boolean preserveOrder;
     private final boolean groupByInstances;
+//    private final Class<?> configFailurePolicyArgType;
+//    private final Object configFailurePolicyArgValue;
 
-    public TestNGSpec(TestNGOptions options, DefaultTestFilter filter) {
+    public TestNGSpec(TestNGOptions options, DefaultTestFilter filter/*, Class<?> config*/) {
         this.defaultSuiteName = options.getSuiteName();
         this.defaultTestName = options.getTestName();
         this.parallel = options.getParallel();
@@ -112,4 +114,8 @@ public class TestNGSpec implements Serializable {
     public boolean getGroupByInstances() {
         return groupByInstances;
     }
+
+//    public Class<?> getConfigFailurePolicyArgType() {
+//        return configFailurePolicyArgType;
+//    }
 }

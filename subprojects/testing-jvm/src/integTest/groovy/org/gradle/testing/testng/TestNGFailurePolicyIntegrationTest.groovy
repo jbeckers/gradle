@@ -56,9 +56,9 @@ class TestNGFailurePolicyIntegrationTest extends AbstractSampleIntegrationTest {
         testResults.assertTestSkipped("someTest")
     }
 
-    def "can be configured to continue executing tests after a config method failure"() {
+    def "can be configured to continue executing tests after a config method failure with version #testNgVersion"() {
         when:
-        usingTestNG('6.14.3') // TODO test fails with TestNG 7.x; see https://github.com/gradle/gradle/issues/10507
+        usingTestNG(testNgVersion)
         buildFile << """
             testing {
                 suites {
@@ -83,6 +83,9 @@ class TestNGFailurePolicyIntegrationTest extends AbstractSampleIntegrationTest {
         and:
         testResults.assertConfigMethodFailed("fail")
         testResults.assertTestPassed("someTest")
+
+        where:
+        testNgVersion << ['6.14.3', '7.5']
     }
 
     def "informative error is shown when trying to use config failure policy and a version that does not support it"() {
