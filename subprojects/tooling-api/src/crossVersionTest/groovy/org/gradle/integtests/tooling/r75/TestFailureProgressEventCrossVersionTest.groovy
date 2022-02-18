@@ -177,7 +177,8 @@ class TestFailureProgressEventCrossVersionTest extends AbstractHttpCrossVersionS
 
         then:
         thrown(BuildException)
-        println progressEventCollector.failures
+        progressEventCollector.failures.size() == 1
+        progressEventCollector.failures[0] instanceof TestAssertionFailure
     }
 
     def "Running testNG test"() {

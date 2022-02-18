@@ -18,56 +18,28 @@ package org.gradle.internal.build.event.types;
 import org.gradle.tooling.internal.protocol.InternalFailure;
 import org.gradle.tooling.internal.protocol.InternalTestAssertionFailure;
 
-import java.io.Serializable;
-import java.util.Collections;
-import java.util.List;
+public class DefaultTestAssertionFailure extends AbstractTestFailure implements InternalTestAssertionFailure {
 
-public class DefaultTestAssertionFailure implements Serializable, InternalTestAssertionFailure {
-
-    private final String message;
-    private final String description;
-    private final InternalFailure cause;
     private final String expected;
     private final String actual;
-    private final String stacktrace;
 
     private DefaultTestAssertionFailure(String message, String description, InternalFailure cause, String expected, String actual, String stacktrace) {
-        this.message = message;
-        this.description = description;
-        this.cause = cause;
+        super(message, description, cause, stacktrace);
         this.expected = expected;
         this.actual = actual;
-        this.stacktrace = stacktrace;
     }
 
+    @Override
     public String getExpected() {
         return expected;
     }
 
+    @Override
     public String getActual() {
         return actual;
     }
 
-    @Override
-    public String getMessage() {
-        return message;
-    }
-
-    @Override
-    public String getDescription() {
-        return description;
-    }
-
-    public String getStacktrace() {
-        return stacktrace;
-    }
-
-    @Override
-    public List<? extends InternalFailure> getCauses() {
-        return Collections.singletonList(cause);
-    }
-
-    public static DefaultTestAssertionFailure fromThrowable(Throwable t, String message, String stacktrace, String expected, String actual) {
+    public static DefaultTestAssertionFailure create(Throwable t, String message, String stacktrace, String expected, String actual) {
         Throwable cause = t.getCause();
         InternalFailure causeFailure = cause != null && cause != t ? DefaultFailure.fromThrowable(cause) : null;
         return new DefaultTestAssertionFailure(message, stacktrace, causeFailure, expected, actual, stacktrace);

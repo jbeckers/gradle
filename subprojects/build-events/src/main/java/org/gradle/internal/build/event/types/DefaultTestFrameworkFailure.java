@@ -13,52 +13,21 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 package org.gradle.internal.build.event.types;
 
 import org.gradle.tooling.internal.protocol.InternalFailure;
 import org.gradle.tooling.internal.protocol.InternalTestFrameworkFailure;
 
-import java.io.Serializable;
-import java.util.Collections;
-import java.util.List;
+public class DefaultTestFrameworkFailure extends AbstractTestFailure implements InternalTestFrameworkFailure {
 
-public class DefaultTestFrameworkFailure implements Serializable, InternalTestFrameworkFailure {
-
-    private final String message;
-    private final String description;
-    private final InternalFailure cause;
-    private final String stacktrace;
-
-    private DefaultTestFrameworkFailure(String message, String description, InternalFailure cause, String stacktrace) {
-        this.message = message;
-        this.description = description;
-        this.cause = cause;
-        this.stacktrace = stacktrace;
+    public DefaultTestFrameworkFailure(String message, String description, InternalFailure cause, String stacktrace) {
+        super(message, description, cause, stacktrace);
     }
 
-    public static DefaultTestFrameworkFailure fromThrowable(Throwable t, String message, String stacktrace) {
+    public static DefaultTestFrameworkFailure create(Throwable t, String message, String stacktrace) {
         Throwable cause = t.getCause();
         InternalFailure causeFailure = cause != null && cause != t ? DefaultFailure.fromThrowable(cause) : null;
         return new DefaultTestFrameworkFailure(message, stacktrace, causeFailure, stacktrace);
-    }
-
-    @Override
-    public String getMessage() {
-        return message;
-    }
-
-    @Override
-    public String getDescription() {
-        return description;
-    }
-
-    @Override
-    public String getStacktrace() {
-        return stacktrace;
-    }
-
-    @Override
-    public List<? extends InternalFailure> getCauses() {
-        return Collections.singletonList(cause);
     }
 }
