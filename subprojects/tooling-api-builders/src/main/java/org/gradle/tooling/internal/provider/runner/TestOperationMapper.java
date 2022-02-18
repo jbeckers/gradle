@@ -138,6 +138,7 @@ class TestOperationMapper implements BuildOperationMapper<ExecuteTestBuildOperat
                 result.add(DefaultTestAssertionFailure.create(
                     failure.getRawFailure(),
                     failure.getDetails().getMessage(),
+                    failure.getDetails().getClassName(),
                     failure.getDetails().getStacktrace(),
                     failure.getDetails().getExpected(),
                     failure.getDetails().getActual()
@@ -146,6 +147,7 @@ class TestOperationMapper implements BuildOperationMapper<ExecuteTestBuildOperat
                 result.add(DefaultTestFrameworkFailure.create(
                     failure.getRawFailure(),
                     failure.getDetails().getMessage(),
+                    failure.getDetails().getClassName(),
                     failure.getDetails().getStacktrace()
                 ));
             }

@@ -22,6 +22,8 @@ package org.gradle.tooling.internal.protocol;
  */
 public interface InternalTestAssertionFailure extends InternalTestFailure {
 
+    String getClassName();
+
     String getExpected();
 
     String getActual();

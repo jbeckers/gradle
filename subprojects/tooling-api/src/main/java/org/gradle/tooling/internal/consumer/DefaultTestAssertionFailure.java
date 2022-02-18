@@ -31,13 +31,15 @@ public class DefaultTestAssertionFailure implements TestAssertionFailure {
     private final String expected;
     private final String actual;
     private final String stacktrace;
+    private final String className;
 
-    public DefaultTestAssertionFailure(String message, String description, String expected, String actual, List<? extends Failure> causes, String stacktrace) {
+    public DefaultTestAssertionFailure(String message, String description, String expected, String actual, List<? extends Failure> causes, String className, String stacktrace) {
         this.message = message;
         this.description = description;
         this.causes = causes;
         this.expected = expected;
         this.actual = actual;
+        this.className = className;
         this.stacktrace = stacktrace;
     }
 
@@ -49,6 +51,11 @@ public class DefaultTestAssertionFailure implements TestAssertionFailure {
     @Override
     public String getActual() {
         return actual;
+    }
+
+    @Override
+    public String getClassName() {
+        return className;
     }
 
     @Nullable

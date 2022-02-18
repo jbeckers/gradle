@@ -26,12 +26,14 @@ public class AbstractTestFailure implements Serializable {
     private final String message;
     private final String description;
     private final InternalFailure cause;
+    private final String className;
     private final String stacktrace;
 
-    protected AbstractTestFailure(String message, String description, InternalFailure cause, String stacktrace) {
+    protected AbstractTestFailure(String message, String description, InternalFailure cause, String className, String stacktrace) {
         this.message = message;
         this.description = description;
         this.cause = cause;
+        this.className = className;
         this.stacktrace = stacktrace;
     }
 
@@ -41,6 +43,10 @@ public class AbstractTestFailure implements Serializable {
 
     public String getDescription() {
         return description;
+    }
+
+    public String getClassName() {
+        return className;
     }
 
     public String getStacktrace() {

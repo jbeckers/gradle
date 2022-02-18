@@ -27,12 +27,14 @@ public class DefaultTestFrameworkFailure implements TestFrameworkFailure {
     private final String message;
     private final String description;
     private final List<? extends Failure> causes;
+    private final String className;
     private final String stacktrace;
 
-    public DefaultTestFrameworkFailure(String message, String description, List<? extends Failure> causes, String stacktrace) {
+    public DefaultTestFrameworkFailure(String message, String description, List<? extends Failure> causes, String className, String stacktrace) {
         this.message = message;
         this.description = description;
         this.causes = causes;
+        this.className = className;
         this.stacktrace = stacktrace;
     }
 
@@ -51,6 +53,11 @@ public class DefaultTestFrameworkFailure implements TestFrameworkFailure {
     @Override
     public List<? extends Failure> getCauses() {
         return causes;
+    }
+
+    @Override
+    public String getClassName() {
+        return className;
     }
 
     @Override

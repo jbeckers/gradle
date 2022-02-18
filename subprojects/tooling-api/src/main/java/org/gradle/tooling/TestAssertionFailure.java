@@ -26,6 +26,13 @@ import org.gradle.api.Incubating;
 public interface TestAssertionFailure extends Failure {
 
     /**
+     * The exception class name.
+     *
+     * @return the class name.
+     */
+    String getClassName();
+
+    /**
      * The expected value.
      *
      * @return expected or null.

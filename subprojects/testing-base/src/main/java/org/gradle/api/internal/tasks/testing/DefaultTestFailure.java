@@ -67,12 +67,12 @@ public class DefaultTestFailure implements TestFailure {
     }
 
     public static TestFailure fromTestAssertionFailure(Throwable failure, String expected, String actual) {
-        DefaultTestFailureDetails details = new DefaultTestFailureDetails(failure.getMessage(), stacktraceOf(failure), true, expected, actual);
+        DefaultTestFailureDetails details = new DefaultTestFailureDetails(failure.getMessage(), failure.getClass().getName(), stacktraceOf(failure), true, expected, actual);
         return new DefaultTestFailure(failure, details);
     }
 
     public static TestFailure fromTestFrameworkFailure(Throwable failure) {
-        DefaultTestFailureDetails details = new DefaultTestFailureDetails(failure.getMessage(), stacktraceOf(failure), false, null, null);
+        DefaultTestFailureDetails details = new DefaultTestFailureDetails(failure.getMessage(), failure.getClass().getName(), stacktraceOf(failure), false, null, null);
         return new DefaultTestFailure(failure, details);
     }
 

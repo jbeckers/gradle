@@ -21,23 +21,31 @@ import org.gradle.api.tasks.testing.TestFailureDetails;
 public class DefaultTestFailureDetails implements TestFailureDetails {
 
     private final String message;
+    private final String className;
     private final String stacktrace;
     private final boolean isAssertionFailure;
     private final String expected;
     private final String actual;
 
-    public DefaultTestFailureDetails(String message, String stacktrace, boolean isAssertionFailure, String expected, String actual) {
+    public DefaultTestFailureDetails(String message, String className, String stacktrace, boolean isAssertionFailure, String expected, String actual) {
+        this.message = message;
+        this.className = className;
+        this.stacktrace = stacktrace;
+        this.isAssertionFailure = isAssertionFailure;
         this.expected = expected;
         this.actual = actual;
-        this.isAssertionFailure = isAssertionFailure;
-        this.message = message;
-        this.stacktrace = stacktrace;
     }
 
     public String getMessage() {
         return message;
     }
 
+    @Override
+    public String getClassName() {
+        return className;
+    }
+
+    @Override
     public String getStacktrace() {
         return stacktrace;
     }
@@ -74,6 +82,9 @@ public class DefaultTestFailureDetails implements TestFailureDetails {
         if (message != null ? !message.equals(that.message) : that.message != null) {
             return false;
         }
+        if (className != null ? !className.equals(that.className) : that.className != null) {
+            return false;
+        }
         if (stacktrace != null ? !stacktrace.equals(that.stacktrace) : that.stacktrace != null) {
             return false;
         }
@@ -86,6 +97,7 @@ public class DefaultTestFailureDetails implements TestFailureDetails {
     @Override
     public int hashCode() {
         int result = message != null ? message.hashCode() : 0;
+        result = 31 * result + (className != null ? className.hashCode() : 0);
         result = 31 * result + (stacktrace != null ? stacktrace.hashCode() : 0);
         result = 31 * result + (isAssertionFailure ? 1 : 0);
         result = 31 * result + (expected != null ? expected.hashCode() : 0);

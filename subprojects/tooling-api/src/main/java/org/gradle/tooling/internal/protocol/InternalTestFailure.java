@@ -20,5 +20,7 @@ public interface InternalTestFailure extends InternalFailure {
 
     String getMessage();
 
+    String getClassName();
+
     String getStacktrace();
 }

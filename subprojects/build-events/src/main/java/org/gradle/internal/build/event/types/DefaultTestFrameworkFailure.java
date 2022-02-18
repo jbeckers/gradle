@@ -21,13 +21,13 @@ import org.gradle.tooling.internal.protocol.InternalTestFrameworkFailure;
 
 public class DefaultTestFrameworkFailure extends AbstractTestFailure implements InternalTestFrameworkFailure {
 
-    public DefaultTestFrameworkFailure(String message, String description, InternalFailure cause, String stacktrace) {
-        super(message, description, cause, stacktrace);
+    public DefaultTestFrameworkFailure(String message, String description, InternalFailure cause, String className, String stacktrace) {
+        super(message, description, cause, className, stacktrace);
     }
 
-    public static DefaultTestFrameworkFailure create(Throwable t, String message, String stacktrace) {
+    public static DefaultTestFrameworkFailure create(Throwable t, String message, String className, String stacktrace) {
         Throwable cause = t.getCause();
         InternalFailure causeFailure = cause != null && cause != t ? DefaultFailure.fromThrowable(cause) : null;
-        return new DefaultTestFrameworkFailure(message, stacktrace, causeFailure, stacktrace);
+        return new DefaultTestFrameworkFailure(message, stacktrace, causeFailure, className, stacktrace);
     }
 }

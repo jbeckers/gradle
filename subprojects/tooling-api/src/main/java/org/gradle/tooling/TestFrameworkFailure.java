@@ -25,5 +25,12 @@ import org.gradle.api.Incubating;
 @Incubating
 public interface TestFrameworkFailure extends Failure {
 
+    /**
+     * The exception class name.
+     *
+     * @return the class name.
+     */
+    String getClassName();
+
     String getStacktrace();
 }

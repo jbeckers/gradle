@@ -31,6 +31,13 @@ public interface TestFailureDetails {
     String getMessage();
 
     /**
+     * The failure class name.
+     *
+     * @return the class name
+     */
+    String getClassName();
+
+    /**
      * Returns the stacktrace of the failure.
      * <p/>
      * The instances are created on the test worker side allowing the clients not to deal with non-serializable exceptions.
