@@ -20,10 +20,10 @@ import org.gradle.integtests.fixtures.RepoScriptBlockUtil
 import org.gradle.integtests.tooling.fixture.AbstractHttpCrossVersionSpec
 import org.gradle.integtests.tooling.fixture.TargetGradleVersion
 import org.gradle.integtests.tooling.fixture.ToolingApiVersion
-import org.gradle.tooling.TestAssertionFailure
 import org.gradle.tooling.BuildException
 import org.gradle.tooling.Failure
 import org.gradle.tooling.ProjectConnection
+import org.gradle.tooling.TestAssertionFailure
 import org.gradle.tooling.TestFrameworkFailure
 import org.gradle.tooling.events.ProgressEvent
 import org.gradle.tooling.events.ProgressListener
@@ -163,6 +163,14 @@ class TestFailureProgressEventCrossVersionTest extends AbstractHttpCrossVersionS
                 def 'my test'() {
                     expect: false
                 }
+
+                def 'wrong exception type'() {
+                    when:
+                    throw new RuntimeException()
+
+                    then:
+                    thrown(IllegalArgumentException)
+                }
             }
         """
         when:
@@ -171,14 +179,16 @@ class TestFailureProgressEventCrossVersionTest extends AbstractHttpCrossVersionS
             connection.newBuild()
                 .addProgressListener(progressEventCollector)
                 .forTasks('test')
+                .setStandardOutput(System.out)
+                .setStandardError(System.err)
+                .addArguments('--info')
                 .run()
         }
 
-
         then:
         thrown(BuildException)
-        progressEventCollector.failures.size() == 1
-        progressEventCollector.failures[0] instanceof TestAssertionFailure
+        progressEventCollector.failures.size() == 2
+        progressEventCollector.failures.findAll { it instanceof TestAssertionFailure }.size() == 2
     }
 
     def "Running testNG test"() {

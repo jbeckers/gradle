@@ -127,12 +127,23 @@ public class JUnitPlatformTestExecutionListener implements TestExecutionListener
     }
 
     private static String readAssertionValueReflectively(String getterName, Throwable failure) {
+        // TODO remove the duplication here
         // AssertionFailedError is not available on the compile classpath
         if (failure.getClass().getCanonicalName().equals("org.opentest4j.AssertionFailedError")) {
             try {
                 Object expectedWrapper = failure.getClass().getMethod(getterName).invoke(failure);
                 if (expectedWrapper != null) {
                     return (String) expectedWrapper.getClass().getMethod("getStringRepresentation").invoke(expectedWrapper);
+                }
+            } catch (Exception ignore) {
+            }
+        } else {
+            // take a wild guess that the failure instance has an exception field that can be converted to a string
+            // This handles the case for Spock's WrongExceptionThrownError
+            try {
+                Object expectedWrapper = failure.getClass().getMethod(getterName).invoke(failure);
+                if (expectedWrapper != null) {
+                    return (String) expectedWrapper.getClass().getMethod("toString").invoke(expectedWrapper);
                 }
             } catch (Exception ignore) {
             }
