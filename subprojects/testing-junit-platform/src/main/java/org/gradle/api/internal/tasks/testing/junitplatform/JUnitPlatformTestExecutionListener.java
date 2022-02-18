@@ -136,6 +136,7 @@ public class JUnitPlatformTestExecutionListener implements TestExecutionListener
                     return (String) expectedWrapper.getClass().getMethod("getStringRepresentation").invoke(expectedWrapper);
                 }
             } catch (Exception ignore) {
+                return null;
             }
         } else {
             // take a wild guess that the failure instance has an exception field that can be converted to a string
@@ -146,6 +147,7 @@ public class JUnitPlatformTestExecutionListener implements TestExecutionListener
                     return (String) expectedWrapper.getClass().getMethod("toString").invoke(expectedWrapper);
                 }
             } catch (Exception ignore) {
+                return null;
             }
         }
         return null;

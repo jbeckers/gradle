@@ -21,9 +21,6 @@ import org.gradle.api.internal.tasks.testing.results.AttachParentTestResultProce
 import org.gradle.api.tasks.testing.TestFailure;
 import org.gradle.internal.time.Clock;
 
-import java.io.PrintWriter;
-import java.io.StringWriter;
-
 public class SuiteTestClassProcessor implements TestClassProcessor {
     private final TestClassProcessor processor;
     private final Clock clock;

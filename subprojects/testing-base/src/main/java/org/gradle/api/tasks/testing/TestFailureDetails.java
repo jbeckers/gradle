@@ -16,11 +16,16 @@
 
 package org.gradle.api.tasks.testing;
 
+import org.gradle.api.Incubating;
+
 import javax.annotation.Nullable;
 
 /**
  * Holds serializable structural information about a test failure.
+ *
+ * @since 7.5
  */
+@Incubating
 public interface TestFailureDetails {
 
     /**
@@ -39,7 +44,7 @@ public interface TestFailureDetails {
 
     /**
      * Returns the stacktrace of the failure.
-     * <p/>
+     * <p>
      * The instances are created on the test worker side allowing the clients not to deal with non-serializable exceptions.
      *
      * @return the stacktrace string
@@ -55,7 +60,7 @@ public interface TestFailureDetails {
 
     /**
      * Returns a string representation of the expected value for an assertion failure.
-     * <></>
+     * <p>
      * If the current instance does not represent an assertion failure, or the test failure doesn't provide any information about expected and actual values then the method returns {@code null}.
      *
      * @return The expected value
@@ -65,7 +70,7 @@ public interface TestFailureDetails {
 
     /**
      * Returns a string representation of the actual value for an assertion failure.
-     * <></>
+     * <p>
      * If the current instance does not represent an assertion failure, or the test failure doesn't provide any information about expected and actual values then the method returns {@code null}.
      *
      * @return The actual value value
