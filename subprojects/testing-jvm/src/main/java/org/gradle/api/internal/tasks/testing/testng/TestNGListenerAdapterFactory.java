@@ -34,7 +34,7 @@ class TestNGListenerAdapterFactory {
         this.classLoader = classLoader;
     }
 
-    public ITestListener    createAdapter(ITestListener listener) {
+    public ITestListener createAdapter(ITestListener listener) {
         Class<?> testNG7Class = tryLoadClass("org.testng.IConfigurationListener");
         if (testNG7Class != null) {
             return createProxy(testNG7Class, listener);
