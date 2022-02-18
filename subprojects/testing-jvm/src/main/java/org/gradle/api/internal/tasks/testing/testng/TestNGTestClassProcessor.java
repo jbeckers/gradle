@@ -169,7 +169,7 @@ public class TestNGTestClassProcessor implements TestClassProcessor {
 
     /**
      * The setter for configFailurePolicy has a different signature depending on TestNG version.  This method uses reflection to
-     * detect the API.  If not {@link String}, coerce the spec's string value to the expected enum value.
+     * detect the API.  If not {@link String}, coerce the spec's string value to the expected enum value using {@link XmlSuite$FailurePolicy#getValidPolicy(String)}
      * <ul>
      *     <li>When TestNG &gt;= 6.9.12, {@link TestNG#setConfigFailurePolicy(org.testng.xml.XmlSuite$FailurePolicy)}</li>
      *     <li>When TestNG &lt; 6.9.12, {@link TestNG#setConfigFailurePolicy(String)}</li>
