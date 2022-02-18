@@ -13,13 +13,12 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 package org.gradle.tooling.internal.protocol;
 
-/**
- * DO NOT CHANGE THIS INTERFACE. It is part of the cross-version protocol.
- *
- * @since 7.5
- */
-public interface InternalTestFrameworkFailure extends InternalTestFailure {
+public interface InternalTestFailure extends InternalFailure {
 
+    String getMessage();
+
+    String getStacktrace();
 }

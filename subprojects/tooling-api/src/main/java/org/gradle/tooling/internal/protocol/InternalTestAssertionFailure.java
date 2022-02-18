@@ -20,13 +20,9 @@ package org.gradle.tooling.internal.protocol;
  *
  * @since 7.5
  */
-public interface InternalTestAssertionFailure extends InternalFailure {
+public interface InternalTestAssertionFailure extends InternalTestFailure {
 
     String getExpected();
 
     String getActual();
-
-    String getMessage();
-
-    String getStacktrace();
 }
